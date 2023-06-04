@@ -105,7 +105,7 @@ class LocIndexer:
 @dataclass
 class StrAccessor(object):
     _fn: Callable
-        
+
     def capitalize(self):
         return CallCol(lambda DF: self._fn(DF).str.capitalize())
 
@@ -113,10 +113,7 @@ class StrAccessor(object):
         return CallCol(lambda DF: self._fn(DF).str.casefold())
 
     def cat(self, others=None, sep=None, na_rep=None, join: 'AlignJoin' = 'left'):
-        if is_col_test(others):
-            return CallCol(lambda DF: self._fn(DF).str.cat(others(DF), sep, na_rep, join))
-        else:
-            return CallCol(lambda DF: self._fn(DF).str.cat(others, sep, na_rep, join))
+        return CallCol(lambda DF: self._fn(DF).str.cat(decide_if_call(others, DF), sep, na_rep, join))
 
     def center(self, width, fillchar: 'str' = ' '):
         return CallCol(lambda DF: self._fn(DF).str.center(width, fillchar))
@@ -280,13 +277,16 @@ class StrAccessor(object):
 @dataclass
 class CatAccessor(object):
     _fn: Callable
-    
+
+    @property
     def categories(self, DF):
         return self._fn(DF).cat.categories
 
+    @property
     def codes(self, DF):
         return self._fn(DF).cat.codes
 
+    @property
     def ordered(self, DF):
         return self._fn(DF).cat.ordered
 
@@ -318,90 +318,119 @@ class CatAccessor(object):
 class DtAccessor(object):
     _fn: Callable
 
+    @property
     def date(self, DF):
         return self._fn(DF).dt.date
 
+    @property
     def day(self, DF):
         return self._fn(DF).dt.day
 
+    @property
     def day_of_week(self, DF):
         return self._fn(DF).dt.day_of_week
 
+    @property
     def day_of_year(self, DF):
         return self._fn(DF).dt.day_of_year
 
+    @property
     def dayofweek(self, DF):
         return self._fn(DF).dt.dayofweek
 
+    @property
     def dayofyear(self, DF):
         return self._fn(DF).dt.dayofyear
 
+    @property
     def days_in_month(self, DF):
         return self._fn(DF).dt.days_in_month
 
+    @property
     def daysinmonth(self, DF):
         return self._fn(DF).dt.daysinmonth
 
+    @property
     def freq(self, DF):
         return self._fn(DF).dt.freq
 
+    @property
     def hour(self, DF):
         return self._fn(DF).dt.hour
 
+    @property
     def is_leap_year(self, DF):
         return self._fn(DF).dt.is_leap_year
 
+    @property
     def is_month_end(self, DF):
         return self._fn(DF).dt.is_month_end
 
+    @property
     def is_month_start(self, DF):
         return self._fn(DF).dt.is_month_start
 
+    @property
     def is_quarter_end(self, DF):
         return self._fn(DF).dt.is_quarter_end
 
+    @property
     def is_quarter_start(self, DF):
         return self._fn(DF).dt.is_quarter_start
 
+    @property
     def is_year_end(self, DF):
         return self._fn(DF).dt.is_year_end
 
+    @property
     def is_year_start(self, DF):
         return self._fn(DF).dt.is_year_start
 
+    @property
     def microsecond(self, DF):
         return self._fn(DF).dt.microsecond
 
+    @property
     def minute(self, DF):
         return self._fn(DF).dt.minute
 
+    @property
     def month(self, DF):
         return self._fn(DF).dt.month
 
+    @property
     def nanosecond(self, DF):
         return self._fn(DF).dt.nanosecond
 
+    @property
     def quarter(self, DF):
         return self._fn(DF).dt.quarter
 
+    @property
     def second(self, DF):
         return self._fn(DF).dt.second
 
+    @property
     def time(self, DF):
         return self._fn(DF).dt.time
 
+    @property
     def timetz(self, DF):
         return self._fn(DF).dt.timetz
 
+    @property
     def tz(self, DF):
         return self._fn(DF).dt.tz
 
+    @property
     def unit(self, DF):
         return self._fn(DF).dt.unit
 
+    @property
     def weekday(self, DF):
         return self._fn(DF).dt.weekday
 
+    @property
     def year(self, DF):
         return self._fn(DF).dt.year
 
@@ -448,15 +477,19 @@ class DtAccessor(object):
 class SparseAccessor(object):
     _fn: Callable
 
+    @property
     def density(self, DF):
         return self._fn(DF).sparse.density
 
+    @property
     def fill_value(self, DF):
         return self._fn(DF).sparse.fill_value
 
+    @property
     def npoints(self, DF):
         return self._fn(DF).sparse.npoints
 
+    @property
     def sp_values(self, DF):
         return self._fn(DF).sparse.sp_values
 
@@ -472,7 +505,7 @@ class SparseAccessor(object):
 @dataclass
 class PlotAccessor(object):
     _fn: Callable
-    
+
     def area(self, x=None, y=None, stacked: 'bool' = True, **kwargs):
         return CallCol(lambda DF: self._fn(DF).plot.area(x, y, stacked, **kwargs))
 
@@ -516,21 +549,27 @@ class BaseCol(object):
     def __call__(self, df):
         pass
 
+    @property
     def __annotations__(self, DF):
         return self.__call__(DF).__annotations__
 
+    @property
     def __array_priority__(self, DF):
         return self.__call__(DF).__array_priority__
 
+    @property
     def __dict__(self, DF):
         return self.__call__(DF).__dict__
 
+    @property
     def __doc__(self, DF):
         return self.__call__(DF).__doc__
 
+    @property
     def __hash__(self, DF):
         return self.__call__(DF).__hash__
 
+    @property
     def __module__(self, DF):
         return self.__call__(DF).__module__
 
@@ -554,60 +593,79 @@ class BaseCol(object):
     def plot(self):
         return PlotAccessor(self.__call__)
 
+    @property
     def T(self, DF):
         return self.__call__(DF).T
 
+    @property
     def array(self, DF):
         return self.__call__(DF).array
 
+    @property
     def attrs(self, DF):
         return self.__call__(DF).attrs
 
+    @property
     def axes(self, DF):
         return self.__call__(DF).axes
 
+    @property
     def dtype(self, DF):
         return self.__call__(DF).dtype
 
+    @property
     def dtypes(self, DF):
         return self.__call__(DF).dtypes
 
+    @property
     def empty(self, DF):
         return self.__call__(DF).empty
 
+    @property
     def flags(self, DF):
         return self.__call__(DF).flags
 
+    @property
     def hasnans(self, DF):
         return self.__call__(DF).hasnans
 
+    @property
     def index(self, DF):
         return self.__call__(DF).index
 
+    @property
     def is_monotonic_decreasing(self, DF):
         return self.__call__(DF).is_monotonic_decreasing
 
+    @property
     def is_monotonic_increasing(self, DF):
         return self.__call__(DF).is_monotonic_increasing
 
+    @property
     def is_unique(self, DF):
         return self.__call__(DF).is_unique
 
+    @property
     def name(self, DF):
         return self.__call__(DF).name
 
+    @property
     def nbytes(self, DF):
         return self.__call__(DF).nbytes
 
+    @property
     def ndim(self, DF):
         return self.__call__(DF).ndim
 
+    @property
     def shape(self, DF):
         return self.__call__(DF).shape
 
+    @property
     def size(self, DF):
         return self.__call__(DF).size
 
+    @property
     def values(self, DF):
         return self.__call__(DF).values
 
@@ -631,16 +689,10 @@ class BaseCol(object):
         return CallCol(lambda DF: self.__call__(DF).__abs__())
 
     def __add__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__add__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__add__(other))
+        return CallCol(lambda DF: self.__call__(DF).__add__(decide_if_call(other, DF)))
 
     def __and__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__and__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__and__(other))
+        return CallCol(lambda DF: self.__call__(DF).__and__(decide_if_call(other, DF)))
 
     def __array__(self, dtype: 'npt.DTypeLike | None' = None):
         return CallCol(lambda DF: self.__call__(DF).__array__(dtype))
@@ -652,76 +704,43 @@ class BaseCol(object):
         return CallCol(lambda DF: self.__call__(DF).__bool__())
 
     def __class__(self, data=None, index=None, dtype: 'Dtype | None' = None, name=None, copy: 'bool | None' = None, fastpath: 'bool' = False):
-        if is_col_test(data):
-            return CallCol(lambda DF: self.__call__(DF).__class__(data(DF), index, dtype, name, copy, fastpath))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__class__(data, index, dtype, name, copy, fastpath))
+        return CallCol(lambda DF: self.__call__(DF).__class__(decide_if_call(data, DF), index, dtype, name, copy, fastpath))
 
     def __contains__(self, key):
         return CallCol(lambda DF: self.__call__(DF).__contains__(key))
 
     def __divmod__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__divmod__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__divmod__(other))
+        return CallCol(lambda DF: self.__call__(DF).__divmod__(decide_if_call(other, DF)))
 
     def __eq__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__eq__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__eq__(other))
+        return CallCol(lambda DF: self.__call__(DF).__eq__(decide_if_call(other, DF)))
 
     def __float__(self):
         return CallCol(lambda DF: self.__call__(DF).__float__())
 
     def __floordiv__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__floordiv__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__floordiv__(other))
+        return CallCol(lambda DF: self.__call__(DF).__floordiv__(decide_if_call(other, DF)))
 
     def __ge__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__ge__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__ge__(other))
+        return CallCol(lambda DF: self.__call__(DF).__ge__(decide_if_call(other, DF)))
 
     def __gt__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__gt__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__gt__(other))
+        return CallCol(lambda DF: self.__call__(DF).__gt__(decide_if_call(other, DF)))
 
     def __iadd__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__iadd__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__iadd__(other))
+        return CallCol(lambda DF: self.__call__(DF).__iadd__(decide_if_call(other, DF)))
 
     def __iand__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__iand__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__iand__(other))
+        return CallCol(lambda DF: self.__call__(DF).__iand__(decide_if_call(other, DF)))
 
     def __ifloordiv__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__ifloordiv__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__ifloordiv__(other))
+        return CallCol(lambda DF: self.__call__(DF).__ifloordiv__(decide_if_call(other, DF)))
 
     def __imod__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__imod__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__imod__(other))
+        return CallCol(lambda DF: self.__call__(DF).__imod__(decide_if_call(other, DF)))
 
     def __imul__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__imul__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__imul__(other))
+        return CallCol(lambda DF: self.__call__(DF).__imul__(decide_if_call(other, DF)))
 
     def __int__(self):
         return CallCol(lambda DF: self.__call__(DF).__int__())
@@ -730,73 +749,40 @@ class BaseCol(object):
         return CallCol(lambda DF: self.__call__(DF).__invert__())
 
     def __ior__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__ior__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__ior__(other))
+        return CallCol(lambda DF: self.__call__(DF).__ior__(decide_if_call(other, DF)))
 
     def __ipow__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__ipow__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__ipow__(other))
+        return CallCol(lambda DF: self.__call__(DF).__ipow__(decide_if_call(other, DF)))
 
     def __isub__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__isub__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__isub__(other))
+        return CallCol(lambda DF: self.__call__(DF).__isub__(decide_if_call(other, DF)))
 
     def __itruediv__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__itruediv__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__itruediv__(other))
+        return CallCol(lambda DF: self.__call__(DF).__itruediv__(decide_if_call(other, DF)))
 
     def __ixor__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__ixor__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__ixor__(other))
+        return CallCol(lambda DF: self.__call__(DF).__ixor__(decide_if_call(other, DF)))
 
     def __le__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__le__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__le__(other))
+        return CallCol(lambda DF: self.__call__(DF).__le__(decide_if_call(other, DF)))
 
     def __len__(self):
         return CallCol(lambda DF: self.__call__(DF).__len__())
 
     def __lt__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__lt__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__lt__(other))
+        return CallCol(lambda DF: self.__call__(DF).__lt__(decide_if_call(other, DF)))
 
     def __matmul__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__matmul__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__matmul__(other))
+        return CallCol(lambda DF: self.__call__(DF).__matmul__(decide_if_call(other, DF)))
 
     def __mod__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__mod__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__mod__(other))
+        return CallCol(lambda DF: self.__call__(DF).__mod__(decide_if_call(other, DF)))
 
     def __mul__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__mul__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__mul__(other))
+        return CallCol(lambda DF: self.__call__(DF).__mul__(decide_if_call(other, DF)))
 
     def __ne__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__ne__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__ne__(other))
+        return CallCol(lambda DF: self.__call__(DF).__ne__(decide_if_call(other, DF)))
 
     def __neg__(self):
         return CallCol(lambda DF: self.__call__(DF).__neg__())
@@ -805,121 +791,67 @@ class BaseCol(object):
         return CallCol(lambda DF: self.__call__(DF).__nonzero__())
 
     def __or__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__or__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__or__(other))
+        return CallCol(lambda DF: self.__call__(DF).__or__(decide_if_call(other, DF)))
 
     def __pos__(self):
         return CallCol(lambda DF: self.__call__(DF).__pos__())
 
     def __pow__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__pow__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__pow__(other))
+        return CallCol(lambda DF: self.__call__(DF).__pow__(decide_if_call(other, DF)))
 
     def __radd__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__radd__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__radd__(other))
+        return CallCol(lambda DF: self.__call__(DF).__radd__(decide_if_call(other, DF)))
 
     def __rand__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__rand__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__rand__(other))
+        return CallCol(lambda DF: self.__call__(DF).__rand__(decide_if_call(other, DF)))
 
     def __rdivmod__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__rdivmod__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__rdivmod__(other))
+        return CallCol(lambda DF: self.__call__(DF).__rdivmod__(decide_if_call(other, DF)))
 
     def __rfloordiv__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__rfloordiv__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__rfloordiv__(other))
+        return CallCol(lambda DF: self.__call__(DF).__rfloordiv__(decide_if_call(other, DF)))
 
     def __rmatmul__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__rmatmul__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__rmatmul__(other))
+        return CallCol(lambda DF: self.__call__(DF).__rmatmul__(decide_if_call(other, DF)))
 
     def __rmod__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__rmod__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__rmod__(other))
+        return CallCol(lambda DF: self.__call__(DF).__rmod__(decide_if_call(other, DF)))
 
     def __rmul__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__rmul__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__rmul__(other))
+        return CallCol(lambda DF: self.__call__(DF).__rmul__(decide_if_call(other, DF)))
 
     def __ror__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__ror__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__ror__(other))
+        return CallCol(lambda DF: self.__call__(DF).__ror__(decide_if_call(other, DF)))
 
     def __round__(self, decimals: 'int' = 0):
         return CallCol(lambda DF: self.__call__(DF).__round__(decimals))
 
     def __rpow__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__rpow__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__rpow__(other))
+        return CallCol(lambda DF: self.__call__(DF).__rpow__(decide_if_call(other, DF)))
 
     def __rsub__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__rsub__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__rsub__(other))
+        return CallCol(lambda DF: self.__call__(DF).__rsub__(decide_if_call(other, DF)))
 
     def __rtruediv__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__rtruediv__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__rtruediv__(other))
+        return CallCol(lambda DF: self.__call__(DF).__rtruediv__(decide_if_call(other, DF)))
 
     def __rxor__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__rxor__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__rxor__(other))
+        return CallCol(lambda DF: self.__call__(DF).__rxor__(decide_if_call(other, DF)))
 
     def __sub__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__sub__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__sub__(other))
+        return CallCol(lambda DF: self.__call__(DF).__sub__(decide_if_call(other, DF)))
 
     def __truediv__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__truediv__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__truediv__(other))
+        return CallCol(lambda DF: self.__call__(DF).__truediv__(decide_if_call(other, DF)))
 
     def __xor__(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).__xor__(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).__xor__(other))
+        return CallCol(lambda DF: self.__call__(DF).__xor__(decide_if_call(other, DF)))
 
     def abs(self):
         return CallCol(lambda DF: self.__call__(DF).abs())
 
     def add(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).add(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).add(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).add(decide_if_call(other, DF), level, fill_value, axis))
 
     def add_prefix(self, prefix: 'str', axis: 'Axis | None' = None):
         return CallCol(lambda DF: self.__call__(DF).add_prefix(prefix, axis))
@@ -934,10 +866,7 @@ class BaseCol(object):
         return CallCol(lambda DF: self.__call__(DF).aggregate(func, axis, *args, **kwargs))
 
     def align(self, other: 'Series', join: 'AlignJoin' = 'outer', axis: 'Axis | None' = None, level: 'Level' = None, copy: 'bool | None' = None, fill_value: 'Hashable' = None, method: 'FillnaOptions | None' = None, limit: 'int | None' = None, fill_axis: 'Axis' = 0, broadcast_axis: 'Axis | None' = None):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).align(other(DF), join, axis, level, copy, fill_value, method, limit, fill_axis, broadcast_axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).align(other, join, axis, level, copy, fill_value, method, limit, fill_axis, broadcast_axis))
+        return CallCol(lambda DF: self.__call__(DF).align(decide_if_call(other, DF), join, axis, level, copy, fill_value, method, limit, fill_axis, broadcast_axis))
 
     def all(self, axis: 'Axis' = 0, bool_only=None, skipna: 'bool_t' = True, **kwargs):
         return CallCol(lambda DF: self.__call__(DF).all(axis, bool_only, skipna, **kwargs))
@@ -991,22 +920,13 @@ class BaseCol(object):
         return CallCol(lambda DF: self.__call__(DF).clip(lower, upper, axis, inplace, **kwargs))
 
     def combine(self, other: 'Series | Hashable', func: 'Callable[[Hashable, Hashable], Hashable]', fill_value: 'Hashable' = None):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).combine(other(DF), func, fill_value))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).combine(other, func, fill_value))
+        return CallCol(lambda DF: self.__call__(DF).combine(decide_if_call(other, DF), func, fill_value))
 
     def combine_first(self, other):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).combine_first(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).combine_first(other))
+        return CallCol(lambda DF: self.__call__(DF).combine_first(decide_if_call(other, DF)))
 
     def compare(self, other: 'Series', align_axis: 'Axis' = 1, keep_shape: 'bool' = False, keep_equal: 'bool' = False, result_names: 'Suffixes' = ('self', 'other')):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).compare(other(DF), align_axis, keep_shape, keep_equal, result_names))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).compare(other, align_axis, keep_shape, keep_equal, result_names))
+        return CallCol(lambda DF: self.__call__(DF).compare(decide_if_call(other, DF), align_axis, keep_shape, keep_equal, result_names))
 
     def convert_dtypes(self, infer_objects: 'bool_t' = True, convert_string: 'bool_t' = True, convert_integer: 'bool_t' = True, convert_boolean: 'bool_t' = True, convert_floating: 'bool_t' = True, dtype_backend: 'DtypeBackend' = 'numpy_nullable'):
         return CallCol(lambda DF: self.__call__(DF).convert_dtypes(infer_objects, convert_string, convert_integer, convert_boolean, convert_floating, dtype_backend))
@@ -1015,19 +935,13 @@ class BaseCol(object):
         return CallCol(lambda DF: self.__call__(DF).copy(deep))
 
     def corr(self, other: 'Series', method: 'CorrelationMethod' = 'pearson', min_periods: 'int | None' = None):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).corr(other(DF), method, min_periods))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).corr(other, method, min_periods))
+        return CallCol(lambda DF: self.__call__(DF).corr(decide_if_call(other, DF), method, min_periods))
 
     def count(self):
         return CallCol(lambda DF: self.__call__(DF).count())
 
     def cov(self, other: 'Series', min_periods: 'int | None' = None, ddof: 'int | None' = 1):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).cov(other(DF), min_periods, ddof))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).cov(other, min_periods, ddof))
+        return CallCol(lambda DF: self.__call__(DF).cov(decide_if_call(other, DF), min_periods, ddof))
 
     def cummax(self, axis: 'Axis | None' = None, skipna: 'bool_t' = True, *args, **kwargs):
         return CallCol(lambda DF: self.__call__(DF).cummax(axis, skipna, *args, **kwargs))
@@ -1048,28 +962,16 @@ class BaseCol(object):
         return CallCol(lambda DF: self.__call__(DF).diff(periods))
 
     def div(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).div(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).div(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).div(decide_if_call(other, DF), level, fill_value, axis))
 
     def divide(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).divide(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).divide(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).divide(decide_if_call(other, DF), level, fill_value, axis))
 
     def divmod(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).divmod(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).divmod(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).divmod(decide_if_call(other, DF), level, fill_value, axis))
 
     def dot(self, other: 'AnyArrayLike'):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).dot(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).dot(other))
+        return CallCol(lambda DF: self.__call__(DF).dot(decide_if_call(other, DF)))
 
     def drop(self, labels: 'IndexLabel' = None, axis: 'Axis' = 0, index: 'IndexLabel' = None, columns: 'IndexLabel' = None, level: 'Level | None' = None, inplace: 'bool' = False, errors: 'IgnoreRaise' = 'raise'):
         return CallCol(lambda DF: self.__call__(DF).drop(labels, axis, index, columns, level, inplace, errors))
@@ -1087,22 +989,13 @@ class BaseCol(object):
         return CallCol(lambda DF: self.__call__(DF).duplicated(keep))
 
     def eq(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).eq(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).eq(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).eq(decide_if_call(other, DF), level, fill_value, axis))
 
     def equals(self, other: 'object'):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).equals(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).equals(other))
+        return CallCol(lambda DF: self.__call__(DF).equals(decide_if_call(other, DF)))
 
     def ewm(self, com: 'float | None' = None, span: 'float | None' = None, halflife: 'float | TimedeltaConvertibleTypes | None' = None, alpha: 'float | None' = None, min_periods: 'int | None' = 0, adjust: 'bool_t' = True, ignore_na: 'bool_t' = False, axis: 'Axis' = 0, times: 'np.ndarray | DataFrame | Series | None' = None, method: 'str' = 'single'):
-        if is_col_test(times):
-            return CallCol(lambda DF: self.__call__(DF).ewm(com, span, halflife, alpha, min_periods, adjust, ignore_na, axis, times(DF), method))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).ewm(com, span, halflife, alpha, min_periods, adjust, ignore_na, axis, times, method))
+        return CallCol(lambda DF: self.__call__(DF).ewm(com, span, halflife, alpha, min_periods, adjust, ignore_na, axis, decide_if_call(times, DF), method))
 
     def expanding(self, min_periods: 'int' = 1, axis: 'Axis' = 0, method: 'str' = 'single'):
         return CallCol(lambda DF: self.__call__(DF).expanding(min_periods, axis, method))
@@ -1117,10 +1010,7 @@ class BaseCol(object):
         return CallCol(lambda DF: self.__call__(DF).ffill(axis, inplace, limit, downcast))
 
     def fillna(self, value: 'Hashable | Mapping | Series | DataFrame' = None, method: 'FillnaOptions | None' = None, axis: 'Axis | None' = None, inplace: 'bool' = False, limit: 'int | None' = None, downcast: 'dict | None' = None):
-        if is_col_test(value):
-            return CallCol(lambda DF: self.__call__(DF).fillna(value(DF), method, axis, inplace, limit, downcast))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).fillna(value, method, axis, inplace, limit, downcast))
+        return CallCol(lambda DF: self.__call__(DF).fillna(decide_if_call(value, DF), method, axis, inplace, limit, downcast))
 
     def filter(self, items=None, like: 'str | None' = None, regex: 'str | None' = None, axis: 'Axis | None' = None):
         return CallCol(lambda DF: self.__call__(DF).filter(items, like, regex, axis))
@@ -1132,16 +1022,10 @@ class BaseCol(object):
         return CallCol(lambda DF: self.__call__(DF).first_valid_index())
 
     def floordiv(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).floordiv(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).floordiv(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).floordiv(decide_if_call(other, DF), level, fill_value, axis))
 
     def ge(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).ge(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).ge(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).ge(decide_if_call(other, DF), level, fill_value, axis))
 
     def get(self, key, default=None):
         return CallCol(lambda DF: self.__call__(DF).get(key, default))
@@ -1150,10 +1034,7 @@ class BaseCol(object):
         return CallCol(lambda DF: self.__call__(DF).groupby(by, axis, level, as_index, sort, group_keys, observed, dropna))
 
     def gt(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).gt(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).gt(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).gt(decide_if_call(other, DF), level, fill_value, axis))
 
     def head(self, n: 'int' = 5):
         return CallCol(lambda DF: self.__call__(DF).head(n))
@@ -1207,34 +1088,17 @@ class BaseCol(object):
         return CallCol(lambda DF: self.__call__(DF).last_valid_index())
 
     def le(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).le(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).le(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).le(decide_if_call(other, DF), level, fill_value, axis))
 
     def lt(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).lt(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).lt(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).lt(decide_if_call(other, DF), level, fill_value, axis))
 
     def map(self, arg: 'Callable | Mapping | Series', na_action: "Literal['ignore'] | None" = None):
-        if is_col_test(arg):
-            return CallCol(lambda DF: self.__call__(DF).map(arg(DF), na_action))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).map(arg, na_action))
+        return CallCol(lambda DF: self.__call__(DF).map(decide_if_call(arg, DF), na_action))
 
     def mask(self, cond, other=lib.no_default):
-        if is_col_test(cond):
-            if is_col_test(other):
-                return CallCol(lambda DF: self.__call__(DF).mask(cond(DF), other(DF)))
-            else:
-                return CallCol(lambda DF: self.__call__(DF).mask(cond(DF), other))
-        else:
-            if is_col_test(other):
-                return CallCol(lambda DF: self.__call__(DF).mask(cond, other(DF)))
-            else:
-                return CallCol(lambda DF: self.__call__(DF).mask(cond, other))
+        return CallCol(lambda DF: self.__call__(DF).mask(decide_if_call(cond, DF), decide_if_call(other, DF)))
+
     def max(self, axis: 'AxisInt | None' = 0, skipna: 'bool_t' = True, numeric_only: 'bool_t' = False, **kwargs):
         return CallCol(lambda DF: self.__call__(DF).max(axis, skipna, numeric_only, **kwargs))
 
@@ -1251,31 +1115,19 @@ class BaseCol(object):
         return CallCol(lambda DF: self.__call__(DF).min(axis, skipna, numeric_only, **kwargs))
 
     def mod(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).mod(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).mod(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).mod(decide_if_call(other, DF), level, fill_value, axis))
 
     def mode(self, dropna: 'bool' = True):
         return CallCol(lambda DF: self.__call__(DF).mode(dropna))
 
     def mul(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).mul(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).mul(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).mul(decide_if_call(other, DF), level, fill_value, axis))
 
     def multiply(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).multiply(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).multiply(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).multiply(decide_if_call(other, DF), level, fill_value, axis))
 
     def ne(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).ne(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).ne(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).ne(decide_if_call(other, DF), level, fill_value, axis))
 
     def nlargest(self, n: 'int' = 5, keep: "Literal['first', 'last', 'all']" = 'first'):
         return CallCol(lambda DF: self.__call__(DF).nlargest(n, keep))
@@ -1305,10 +1157,7 @@ class BaseCol(object):
         return CallCol(lambda DF: self.__call__(DF).pop(item))
 
     def pow(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).pow(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).pow(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).pow(decide_if_call(other, DF), level, fill_value, axis))
 
     def prod(self, axis: 'Axis | None' = None, skipna: 'bool_t' = True, numeric_only: 'bool_t' = False, min_count: 'int' = 0, **kwargs):
         return CallCol(lambda DF: self.__call__(DF).prod(axis, skipna, numeric_only, min_count, **kwargs))
@@ -1320,10 +1169,7 @@ class BaseCol(object):
         return CallCol(lambda DF: self.__call__(DF).quantile(q, interpolation))
 
     def radd(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).radd(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).radd(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).radd(decide_if_call(other, DF), level, fill_value, axis))
 
     def rank(self, axis: 'Axis' = 0, method: 'str' = 'average', numeric_only: 'bool_t' = False, na_option: 'str' = 'keep', ascending: 'bool_t' = True, pct: 'bool_t' = False):
         return CallCol(lambda DF: self.__call__(DF).rank(axis, method, numeric_only, na_option, ascending, pct))
@@ -1332,25 +1178,16 @@ class BaseCol(object):
         return CallCol(lambda DF: self.__call__(DF).ravel(order))
 
     def rdiv(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).rdiv(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).rdiv(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).rdiv(decide_if_call(other, DF), level, fill_value, axis))
 
     def rdivmod(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).rdivmod(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).rdivmod(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).rdivmod(decide_if_call(other, DF), level, fill_value, axis))
 
     def reindex(self, index=None, axis: 'Axis | None' = None, method: 'str | None' = None, copy: 'bool | None' = None, level: 'Level | None' = None, fill_value: 'Scalar | None' = None, limit: 'int | None' = None, tolerance=None):
         return CallCol(lambda DF: self.__call__(DF).reindex(index, axis, method, copy, level, fill_value, limit, tolerance))
 
     def reindex_like(self, other, method: "Literal['backfill', 'bfill', 'pad', 'ffill', 'nearest'] | None" = None, copy: 'bool_t | None' = None, limit=None, tolerance=None):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).reindex_like(other(DF), method, copy, limit, tolerance))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).reindex_like(other, method, copy, limit, tolerance))
+        return CallCol(lambda DF: self.__call__(DF).reindex_like(decide_if_call(other, DF), method, copy, limit, tolerance))
 
     def rename(self, index: 'Renamer | Hashable | None' = None, axis: 'Axis | None' = None, copy: 'bool' = True, inplace: 'bool' = False, level: 'Level | None' = None, errors: 'IgnoreRaise' = 'ignore'):
         return CallCol(lambda DF: self.__call__(DF).rename(index, axis, copy, inplace, level, errors))
@@ -1374,22 +1211,13 @@ class BaseCol(object):
         return CallCol(lambda DF: self.__call__(DF).reset_index(level, drop, name, inplace, allow_duplicates))
 
     def rfloordiv(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).rfloordiv(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).rfloordiv(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).rfloordiv(decide_if_call(other, DF), level, fill_value, axis))
 
     def rmod(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).rmod(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).rmod(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).rmod(decide_if_call(other, DF), level, fill_value, axis))
 
     def rmul(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).rmul(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).rmul(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).rmul(decide_if_call(other, DF), level, fill_value, axis))
 
     def rolling(self, window: 'int | dt.timedelta | str | BaseOffset | BaseIndexer', min_periods: 'int | None' = None, center: 'bool_t' = False, win_type: 'str | None' = None, on: 'str | None' = None, axis: 'Axis' = 0, closed: 'str | None' = None, step: 'int | None' = None, method: 'str' = 'single'):
         return CallCol(lambda DF: self.__call__(DF).rolling(window, min_periods, center, win_type, on, axis, closed, step, method))
@@ -1398,22 +1226,13 @@ class BaseCol(object):
         return CallCol(lambda DF: self.__call__(DF).round(decimals, *args, **kwargs))
 
     def rpow(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).rpow(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).rpow(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).rpow(decide_if_call(other, DF), level, fill_value, axis))
 
     def rsub(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).rsub(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).rsub(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).rsub(decide_if_call(other, DF), level, fill_value, axis))
 
     def rtruediv(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).rtruediv(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).rtruediv(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).rtruediv(decide_if_call(other, DF), level, fill_value, axis))
 
     def sample(self, n: 'int | None' = None, frac: 'float | None' = None, replace: 'bool_t' = False, weights=None, random_state: 'RandomState | None' = None, axis: 'Axis | None' = None, ignore_index: 'bool_t' = False):
         return CallCol(lambda DF: self.__call__(DF).sample(n, frac, replace, weights, random_state, axis, ignore_index))
@@ -1449,16 +1268,10 @@ class BaseCol(object):
         return CallCol(lambda DF: self.__call__(DF).std(axis, skipna, ddof, numeric_only, **kwargs))
 
     def sub(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).sub(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).sub(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).sub(decide_if_call(other, DF), level, fill_value, axis))
 
     def subtract(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).subtract(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).subtract(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).subtract(decide_if_call(other, DF), level, fill_value, axis))
 
     def sum(self, axis: 'Axis | None' = None, skipna: 'bool_t' = True, numeric_only: 'bool_t' = False, min_count: 'int' = 0, **kwargs):
         return CallCol(lambda DF: self.__call__(DF).sum(axis, skipna, numeric_only, min_count, **kwargs))
@@ -1533,10 +1346,7 @@ class BaseCol(object):
         return CallCol(lambda DF: self.__call__(DF).transpose(*args, **kwargs))
 
     def truediv(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).truediv(other(DF), level, fill_value, axis))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).truediv(other, level, fill_value, axis))
+        return CallCol(lambda DF: self.__call__(DF).truediv(decide_if_call(other, DF), level, fill_value, axis))
 
     def truncate(self, before=None, after=None, axis: 'Axis | None' = None, copy: 'bool_t | None' = None):
         return CallCol(lambda DF: self.__call__(DF).truncate(before, after, axis, copy))
@@ -1554,10 +1364,7 @@ class BaseCol(object):
         return CallCol(lambda DF: self.__call__(DF).unstack(level, fill_value))
 
     def update(self, other: 'Series | Sequence | Mapping'):
-        if is_col_test(other):
-            return CallCol(lambda DF: self.__call__(DF).update(other(DF)))
-        else:
-            return CallCol(lambda DF: self.__call__(DF).update(other))
+        return CallCol(lambda DF: self.__call__(DF).update(decide_if_call(other, DF)))
 
     def value_counts(self, normalize: 'bool' = False, sort: 'bool' = True, ascending: 'bool' = False, bins=None, dropna: 'bool' = True):
         return CallCol(lambda DF: self.__call__(DF).value_counts(normalize, sort, ascending, bins, dropna))
@@ -1568,18 +1375,8 @@ class BaseCol(object):
     def view(self, dtype: 'Dtype | None' = None):
         return CallCol(lambda DF: self.__call__(DF).view(dtype))
 
-    def where(self, cond, other=lib.no_default):        
+    def where(self, cond, other=lib.no_default):
         return CallCol(lambda DF: self.__call__(DF).where(decide_if_call(cond, DF), decide_if_call(other, DF)))
-        # if is_col_test(cond):
-        #     if is_col_test(other):
-        #         return CallCol(lambda DF: self.__call__(DF).where(cond(DF), other(DF)))
-        #     else:
-        #         return CallCol(lambda DF: self.__call__(DF).where(cond(DF), other))
-        # else:
-        #     if is_col_test(other):
-        #         return CallCol(lambda DF: self.__call__(DF).where(cond, other(DF)))
-        #     else:
-        #         return CallCol(lambda DF: self.__call__(DF).where(cond, other))
 
     def xs(self, key: 'IndexLabel', axis: 'Axis' = 0, level: 'IndexLabel' = None, drop_level: 'bool_t' = True):
         return CallCol(lambda DF: self.__call__(DF).xs(key, axis, level, drop_level))

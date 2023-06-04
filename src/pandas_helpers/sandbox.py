@@ -1,18 +1,29 @@
+"""Method chaining is good, but there are too many lambdas everywhere.
+
+The col operator fixes that.
+"""
 
 # %%
 import pandas as pd
-from dunder_methods_autogen_full_temp import Col as col
+from autogen_full import Col as col
 
 # %%
 df = pd.DataFrame(dict(a=[1,2,3], b=[10,20,30]))
 
-
 # %%
 (
     df
-    .assign(c=[100,200,300])
-    .assign(d = (col("b") ** col("a"))/2 + col("c"))
-    .assign(e=col("a") + 10000 + col("b") + 10000 + col("c"))
+    .assign(
+        c = [100,200,300],
+        #** Which would you prefer to read or write?
+        d0 = lambda DF: DF["c"] + 1,
+        d = col("c") + 1,
+        #** Handles subtraction from both sides
+        e = col("b") - 10,
+        f = 10 - col("b"),
+        #** Handles any permutation of python operators you can think of!
+        g = (col("b") / col("a")) ** 2 // col("c"),
+    )
 )
 
 # %%
@@ -20,7 +31,8 @@ df = pd.DataFrame(dict(a=[1,2,3], b=[10,20,30]))
     df
     .assign(c=list("abc"))
     .assign(d=list("def"))
-    .assign(e=col("c").str.concat("d")) # TODO - StringAccessor has no __init__!
+    #** Can handle all the standard accessor properties and methods
+    .assign(e=col("c").str.cat(col("c")))
 )
 
 
@@ -29,17 +41,14 @@ df2 = pd.DataFrame(dict(
     a = [1,2,3,4,5],
     b = [3,1,3,1,3],
 ))
-
-# %%
+#** Also works for filtering with loc
 df2.loc[col("a") <= col("b")]
 # %%
-df3 = pd.DataFrame(dict(
-    a=[1,pd.NA, pd.NA],
-    b=[2,pd.NA,3],
-))
-
-(
-    df3
+df3 = (
+    pd.DataFrame(dict(
+        a=[1,pd.NA, pd.NA],
+        b=[2,pd.NA,3],
+    ))
     .assign(c = (pd.NA, 4, pd.NA))
     .assign(
         d = col("c").combine_first(col("b")),
@@ -48,24 +57,40 @@ df3 = pd.DataFrame(dict(
     )
 )
 
+df3
 # %%
-df5 = pd.DataFrame(dict(
-    a = [10,20,30,40,50],
-    b = [4,3,2,1,0],
-)).assign(c=col("b").loc[2:3])
-
-df5
-# %%
-
-# %%
-df5 = df5.assign(
-    d = (col("b") % 2).astype(bool),
+df5 = (
+    pd.DataFrame(dict(
+        a = [10,20,30,40,50],
+        b = [4,3,2,1,0],
+        c = [-1,-2,-3,-4,-5]
+    ))
+    .assign(
+        c=col("b").loc[2:3], #** It handles loc *within* assign
+        d = (col("b") % 2).astype(bool),
+        match_1 = col("a").where(col("d"), col("b")),
+        #** So much coing on here!
+        match_2 = col("a").where((col("b") % 2).astype(bool), col("b")),
+        g = col("a").where(col("d")),
+    )
 )
 
 df5
-# %%
-df5.assign(e = lambda DF: DF["d"].where(DF["d"]))
 
 # %%
-df5.assign(e = col("d").where(col("d"))) # TODO - doesn't match the above
+#** Some other string methods
+df6 = pd.DataFrame(dict(
+    a=["abc", "def", "ghijk"],
+    b=list("def")
+))
+
+df6.assign(
+    c = col("a").str.center(10),
+    d = col("a").str.cat(col("b"), sep=" - "),
+)
+
 # %%
+#** Some are breaking because the automatic arg detector finds args that are only relevant to dataframes.
+# **These need to be weeded out.
+df5.assign(h = col("b").loc[2:3].fillna(0))
+
