@@ -549,6 +549,9 @@ class BaseCol(object):
     def __call__(self, df):
         pass
 
+    def __getitem__(self, *indexes):
+        return CallCol(lambda DF: self.__call__(DF).at.__getitem__(*indexes))
+
     @property
     def __annotations__(self, DF):
         return self.__call__(DF).__annotations__

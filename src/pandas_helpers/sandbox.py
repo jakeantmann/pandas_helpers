@@ -94,3 +94,8 @@ df6.assign(
 # **These need to be weeded out.
 df5.assign(h = col("b").loc[2:3].fillna(0))
 
+# %% Add indexes
+df5.assign(
+    h = col("a")[2]
+)
+# %%
