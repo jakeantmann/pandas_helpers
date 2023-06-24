@@ -99,3 +99,40 @@ df5.assign(
     h = col("a")[2]
 )
 # %%
+# df5["a"].__array_ufunc__(np.reshape, "add")
+
+import numpy as np
+
+v1 = np.array([1,2,3])
+v2 = np.array([10,20,30])
+v1.__array_ufunc__("__add__", v2)
+
+
+
+
+# %%
+df7 = pd.DataFrame(dict(b=[1,2,3,4,5], c=[3,3,1,4,2], a=[10,20,30,40,50])).set_index(["b", "c"])
+df7
+# %%
+df7["a"].swapaxes(0,1)
+# %%
+df7.assign(zzz = col("a").swaplevel())
+# %%
+s1 = pd.Series([1,2,3], index=[4,5,6])
+s2 = pd.Series([10,20,30], index=[6,7,4])
+
+s1,s2
+# %%
+s1.reindex_like(s2)
+# %%
+df8 = pd.DataFrame(
+    dict(
+        a=[1,4,3,2,2,3,1],
+        b=range(7),
+    ),
+    index = [8,2,3,4,6,1,5]
+)
+
+df8.assign(c = col("a").__class__())
+
+# %%

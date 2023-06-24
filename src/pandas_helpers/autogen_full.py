@@ -1013,7 +1013,7 @@ class BaseCol(object):
         return CallCol(lambda DF: self.__call__(DF).ffill(axis, inplace, limit, downcast))
 
     def fillna(self, value: 'Hashable | Mapping | Series | DataFrame' = None, method: 'FillnaOptions | None' = None, axis: 'Axis | None' = None, inplace: 'bool' = False, limit: 'int | None' = None, downcast: 'dict | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).fillna(decide_if_call(value, DF), method, axis, inplace, limit, downcast))
+        return CallCol(lambda DF: self.__call__(DF).fillna(decide_if_call(value, DF), method=method, axis=axis, inplace=inplace, limit=limit, downcast=downcast))
 
     def filter(self, items=None, like: 'str | None' = None, regex: 'str | None' = None, axis: 'Axis | None' = None):
         return CallCol(lambda DF: self.__call__(DF).filter(items, like, regex, axis))

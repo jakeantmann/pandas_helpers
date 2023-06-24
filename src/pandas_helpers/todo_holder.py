@@ -1,13 +1,24 @@
 # %%
-# TODO Finish off the accessor-specific TODOs
-# - cat: check add_categories, as_ordered, as_unordered, remove_categories, reorder_categories, set_categories - can any take a series?
-# - dt: check all methods except to_pydatetime
-# - sparse: check from_coo (param A)
+# TODO remove
+# - plot.hexbin
+# - plot.scatter
+# - swapaxes
+
+# TODO update patches
+# - Make all arguments keyword arguments
+# - Remove existing patches
 
 # TODO Make all methods/properties work as they should
-# - Handle those with excessive arguments more gracefully
+# - sparse: check from_coo (param A)
+# - Make all arguments keyword arguments
+# - Remove existing patches
 # - Remove type hints
 # - Test every method and property (ie make unit tests). Could ask for help on this?
+
+# TODO housekeeping
+# - Rename this script _<bla>.py, add description at top
+# - Rename autogen_full.py
+# - Remove all other scripts except sandbox
 
 # TODO Packaging
 # - Organise package contents
@@ -505,6 +516,7 @@ output = [
     "    ",
     "    def __call__(self, DF):",
     "        return self.fn(DF)",
+    "",
 ]
 
 # %%
@@ -528,5 +540,16 @@ with open("./src/pandas_helpers/autogen_full.py", "w") as f:
     f.write("\n".join(output))
 
 # %%
+# TODO remove
+# - plot.hexbin
+# - plot.scatter
+# - swapaxes
 
-# %%
+# TODO update patches
+# - Make all arguments keyword arguments
+# - Remove existing patches
+
+# TODO housekeeping
+# - Rename this script _<bla>.py, add description at top
+# - Rename autogen_full.py
+# - Remove all other scripts except sandbox
