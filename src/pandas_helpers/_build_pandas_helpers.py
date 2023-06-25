@@ -1,38 +1,6 @@
-"""Build pandas_helpers.py"""
+"""Automate the build of pandas_helpers.py"""
 
-
-# %%
-# TODO Make all methods/properties work as they should
-# - sparse: check from_coo (param A)
-# - Test every method and property (ie make unit tests). Could ask for help on this?
-
-# TODO housekeeping
-# - Rename this script _<bla>.py, add description at top
-# - Remove all other scripts except sandbox
-
-# TODO Packaging
-# - Organise package contents
-    # - Add __main__.py etc.
-        # - Expose only col (ie from _ import col)
-    # - Remove unnecessary files (eg coalesce.py, example.py etc.)
-    # - Put helper functions in a private module
-    # - Put code-writing functions in a private module
-# - Add noqa for BaseCol issues
-# - Reintroduce and pass pre-commit checks
-# - Ensure the package works locally
-# - Use PipTools (since this is a library)
-# - Publish to PyPi
-
-# TODO Update README
-# - Note that the dunder and private attrs that aren't included
-# - Give some examples
-# - Add TODOs
-
-# TODO Future work
-# - See whether the tests can be run on many versions of pandas
-# - Add changelog
-
-# %%
+# %% Imports
 import inspect
 import operator
 import re
@@ -297,8 +265,7 @@ def find_dunder_attr_groups(attrs, series):
 
 def write_dunder_methods_code(series, methods):
     methods_to_exclude = [
-        "__init__",
-        "__new__",
+        "__array_ufunc__",
         "__copy__",
         "__deepcopy__",
         "__delattr__",
@@ -309,7 +276,9 @@ def write_dunder_methods_code(series, methods):
         "__getattribute__",
         "__getitem__",
         "__getstate__",
+        "__init__",
         "__iter__",
+        "__new__",
         "__repr__",
         "__setattr__",
         "__setitem__",
@@ -363,7 +332,7 @@ series_dict = {
 
 attr_groups = find_attr_groups(find_attrs(series_dict), series_dict["plot"])
 
-##### %% Dunders
+# %% Dunders
 integer_series = series_dict["plot"]
 
 operator_dunder_attrs = sorted([i for i in dir(operator) if i.startswith("__")])
@@ -377,7 +346,7 @@ dunder_attr_groups = find_dunder_attr_groups(series_dunder_attrs, integer_series
 check_builtins(dunder_attr_groups["builtins"])
 
 
-# %%
+# %% Write the output as a list
 output = [
     "\"\"\"Auto-generated dunder method col implementation\"\"\"",
     "",
@@ -433,10 +402,10 @@ output = [
     "",
 ]
 
-# %%
+# %% Apply final patches to the output
 output = [i.replace("<no_default>", "lib.no_default") for i in output]
 output = [i.replace("<class 'dict'>", "dict") for i in output]
 
-# %%
-with open("./src/pandas_helpers/pandas_helpers.py", "w") as f:
+# %% Write the output as a file
+with open("./src/pandas_helpers/helpers.py", "w") as f:
     f.write("\n".join(output))
