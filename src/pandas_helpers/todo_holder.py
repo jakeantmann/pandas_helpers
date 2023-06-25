@@ -4,10 +4,6 @@
 # - plot.scatter
 # - swapaxes
 
-# TODO update patches
-# - Make all arguments keyword arguments
-# - Remove existing patches
-
 # TODO Make all methods/properties work as they should
 # - sparse: check from_coo (param A)
 # - Make all arguments keyword arguments
@@ -73,20 +69,20 @@ def write_property_code(properties, function_name="__call__", accessor=""):
     return flatten_tuple_comprehension(property_tuple, make_simple_property)
 
 
-def make_called_method(method, param_call_list, params_with_self_with_default_args_str, param_names_str, func="__call__", accessor=""):
-    output = make_simple_method(method, params_with_self_with_default_args_str, param_names_str, func, accessor)
+def make_called_method(method, param_call_list, params_fn_def, params_positional_args, func="__call__", accessor=""):
+    output = make_simple_method(method, params_fn_def, params_positional_args, func, accessor)
 
     for param in param_call_list:
-        output[1] = re.sub(f"\\b{param}\\b", f"decide_if_call({param}, DF)", output[1])
+        output[1] = re.sub(f"\\b={param}\\b", f"=decide_if_call({param}, DF)", output[1])
 
     return output
 
-def make_simple_method(method, params_with_self_with_default_args_str, param_names_str, func="__call__", accessor=""):
+def make_simple_method(method, params_fn_def, params_positional_args, func="__call__", accessor=""):
     accessor_text = f".{accessor}" if accessor else ""
     
     return [
-        f"    def {method}({params_with_self_with_default_args_str}):",
-        f"        return CallCol(lambda DF: self.{func}(DF){accessor_text}.{method}({param_names_str}))",
+        f"    def {method}({params_fn_def}):",
+        f"        return CallCol(lambda DF: self.{func}(DF){accessor_text}.{method}({params_positional_args}))",
         f"",
     ]
 
@@ -111,28 +107,32 @@ def write_indexer(indexer_name):
         f"",
     ]
 
+def remove_types(txt):
+    param = txt.split(':')[0].split("=")[0].strip()
+    
+    if ":" in txt:
+        remainder = txt.split(":")[1]
+    else:
+        remainder = txt
+    
+    if "=" in txt:
+        default_value = remainder.split("=")[1].strip()
+        output = f"{param} = {default_value}"
+    else:
+        output = param
+    
+    return output
 
 def make_code_helpers(series_object, method_name):
     params = inspect.signature(getattr(series_object, method_name)).parameters
 
-    params_str = (
-        ", "
-        .join(params.keys())
-        # .replace("'", "\"")
-    )
+    params_positional_args = ", ".join([f"{i}={i}" for i in params.keys()])
 
-    params_str = re.sub("([^*w])args", "\\1*args", params_str)
-    params_str = re.sub("([^*])kwargs", "\\1**kwargs", params_str)
-    params_str = re.sub("^args", "*args", params_str)
-    params_str = re.sub("^kwargs", "**kwargs", params_str)
+    param_values = [remove_types(str(value)) for value in params.values()]
 
-    default_params_str = (
-        ", "
-        .join(["self", *[str(value) for value in params.values()]])
-        # .replace("'", "\"")
-    )
+    params_fn_def = (", ".join(["self", *param_values]))
 
-    return default_params_str, params_str
+    return params_fn_def, params_positional_args
 
 
 def make_accessor_property_code(accessor):
@@ -406,73 +406,9 @@ output = [
     "# %% Imports",
     "from abc import abstractmethod",
     "from dataclasses import dataclass",
-    "from typing import Any, Callable, Literal, Hashable, IO, Optional, Union",
-    "import re",
+    "from typing import Any, Callable",
     "",
-    "import numpy as np",
-    "import numpy.typing as npt",
-    "",
-    "import pandas as pd",
-    "from pandas import Series, DataFrame",
-    "from pandas.core.indexers.objects import BaseIndexer",
-    "from pandas.core.arrays.base import ExtensionArray",
-    "from pandas.io.pytables import HDFStore",
-    "from pandas._libs.tslibs import BaseOffset",
-    "from pandas._typing import (",
-    "    AggFuncType,",
-    "    AlignJoin,",
-    "    AnyAll,",
-    "    AnyArrayLike,",
-    "    Axis,",
-    "    AxisInt,",
-    "    CompressionOptions,",
-    "    CorrelationMethod,",
-    "    DropKeep,",
-    "    Dtype,",
-    "    DtypeArg,",
-    "    DtypeBackend,",
-    "    FilePath,",
-    "    FillnaOptions,",
-    "    FloatFormatType,",
-    "    FormattersType,",
-    "    Frequency,",
-    "    IgnoreRaise,",
-    "    IndexKeyFunc,",
-    "    IndexLabel,",
-    "    IntervalClosedType,",
-    "    JSONSerializable,",
-    "    Level,",
-    "    Mapping,",
-    "    NaPosition,",
-    "    QuantileInterpolation,",
-    "    RandomState,",
-    "    Renamer,",
-    "    Scalar,",
-    "    Sequence,",
-    "    SortKind,",
-    "    StorageOptions,",
-    "    Suffixes,",
-    "    TimeAmbiguous,",
-    "    TimedeltaConvertibleTypes,",
-    "    TimeNonexistent,",
-    "    TimestampConvertibleTypes,",
-    "    ValueKeyFunc,",
-    "    WriteBuffer,",
-    ")",
     "from pandas._libs import lib",
-    "",
-    "ScalarLike_co = Union[",
-    "        int,",
-    "        float,",
-    "        complex,",
-    "        str,",
-    "        bytes,",
-    "        np.generic,",
-    "    ]",
-    "NumpySorter = Optional[np._typing._ArrayLikeInt_co]",
-    "NumpyValueArrayLike = Union[ScalarLike_co, npt.ArrayLike]",
-    "",
-    "bool_t = bool",
     "",
     "# %% Classes and functions",
     "def is_col_test(obj):",
@@ -520,36 +456,9 @@ output = [
 ]
 
 # %%
-output = [re.sub("Literal\[\((.+?)\)\]", "Literal[\\1]", i) for i in output]
 output = [i.replace("<no_default>", "lib.no_default") for i in output]
 output = [i.replace("<class 'dict'>", "dict") for i in output]
-
-where_text_1 = "    def where(self, cond, other=lib.no_default, inplace: 'bool' = False, axis: 'Axis | None' = None, level: 'Level' = None):"
-where_text_2 = "        return CallCol(lambda DF: self.__call__(DF).where(decide_if_call(cond, DF), decide_if_call(other, DF), inplace, axis, level))"
-
-output = [i.replace(where_text_1, "    def where(self, cond, other=lib.no_default):") for i in output]
-output = [i.replace(where_text_2, "        return CallCol(lambda DF: self.__call__(DF).where(decide_if_call(cond, DF), decide_if_call(other, DF)))") for i in output]
-
-mask_text_1 = "    def mask(self, cond, other=lib.no_default, inplace: 'bool' = False, axis: 'Axis | None' = None, level: 'Level' = None):"
-mask_text_2 = "        return CallCol(lambda DF: self.__call__(DF).mask(decide_if_call(cond, DF), decide_if_call(other, DF), inplace, axis, level))"
-output = [i.replace(mask_text_1, "    def mask(self, cond, other=lib.no_default):") for i in output]
-output = [i.replace(mask_text_2, "        return CallCol(lambda DF: self.__call__(DF).mask(decide_if_call(cond, DF), decide_if_call(other, DF)))") for i in output]
 
 # %%
 with open("./src/pandas_helpers/autogen_full.py", "w") as f:
     f.write("\n".join(output))
-
-# %%
-# TODO remove
-# - plot.hexbin
-# - plot.scatter
-# - swapaxes
-
-# TODO update patches
-# - Make all arguments keyword arguments
-# - Remove existing patches
-
-# TODO housekeeping
-# - Rename this script _<bla>.py, add description at top
-# - Rename autogen_full.py
-# - Remove all other scripts except sandbox

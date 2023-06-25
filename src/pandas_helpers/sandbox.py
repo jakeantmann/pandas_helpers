@@ -5,7 +5,7 @@ The col operator fixes that.
 
 # %%
 import pandas as pd
-from autogen_full import Col as col
+from src.pandas_helpers.autogen_full import Col as col
 
 # %%
 df = pd.DataFrame(dict(a=[1,2,3], b=[10,20,30]))
@@ -98,23 +98,10 @@ df5.assign(h = col("b").loc[2:3].fillna(0))
 df5.assign(
     h = col("a")[2]
 )
-# %%
-# df5["a"].__array_ufunc__(np.reshape, "add")
-
-import numpy as np
-
-v1 = np.array([1,2,3])
-v2 = np.array([10,20,30])
-v1.__array_ufunc__("__add__", v2)
-
-
-
 
 # %%
 df7 = pd.DataFrame(dict(b=[1,2,3,4,5], c=[3,3,1,4,2], a=[10,20,30,40,50])).set_index(["b", "c"])
 df7
-# %%
-df7["a"].swapaxes(0,1)
 # %%
 df7.assign(zzz = col("a").swaplevel())
 # %%

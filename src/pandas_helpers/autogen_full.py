@@ -3,73 +3,9 @@
 # %% Imports
 from abc import abstractmethod
 from dataclasses import dataclass
-from typing import Any, Callable, Literal, Hashable, IO, Optional, Union
-import re
+from typing import Any, Callable
 
-import numpy as np
-import numpy.typing as npt
-
-import pandas as pd
-from pandas import Series, DataFrame
-from pandas.core.indexers.objects import BaseIndexer
-from pandas.core.arrays.base import ExtensionArray
-from pandas.io.pytables import HDFStore
-from pandas._libs.tslibs import BaseOffset
-from pandas._typing import (
-    AggFuncType,
-    AlignJoin,
-    AnyAll,
-    AnyArrayLike,
-    Axis,
-    AxisInt,
-    CompressionOptions,
-    CorrelationMethod,
-    DropKeep,
-    Dtype,
-    DtypeArg,
-    DtypeBackend,
-    FilePath,
-    FillnaOptions,
-    FloatFormatType,
-    FormattersType,
-    Frequency,
-    IgnoreRaise,
-    IndexKeyFunc,
-    IndexLabel,
-    IntervalClosedType,
-    JSONSerializable,
-    Level,
-    Mapping,
-    NaPosition,
-    QuantileInterpolation,
-    RandomState,
-    Renamer,
-    Scalar,
-    Sequence,
-    SortKind,
-    StorageOptions,
-    Suffixes,
-    TimeAmbiguous,
-    TimedeltaConvertibleTypes,
-    TimeNonexistent,
-    TimestampConvertibleTypes,
-    ValueKeyFunc,
-    WriteBuffer,
-)
 from pandas._libs import lib
-
-ScalarLike_co = Union[
-        int,
-        float,
-        complex,
-        str,
-        bytes,
-        np.generic,
-    ]
-NumpySorter = Optional[np._typing._ArrayLikeInt_co]
-NumpyValueArrayLike = Union[ScalarLike_co, npt.ArrayLike]
-
-bool_t = bool
 
 # %% Classes and functions
 def is_col_test(obj):
@@ -112,50 +48,50 @@ class StrAccessor(object):
     def casefold(self):
         return CallCol(lambda DF: self._fn(DF).str.casefold())
 
-    def cat(self, others=None, sep=None, na_rep=None, join: 'AlignJoin' = 'left'):
-        return CallCol(lambda DF: self._fn(DF).str.cat(decide_if_call(others, DF), sep, na_rep, join))
+    def cat(self, others = None, sep = None, na_rep = None, join = 'left'):
+        return CallCol(lambda DF: self._fn(DF).str.cat(others=decide_if_call(others, DF), sep=sep, na_rep=na_rep, join=join))
 
-    def center(self, width, fillchar: 'str' = ' '):
-        return CallCol(lambda DF: self._fn(DF).str.center(width, fillchar))
+    def center(self, width, fillchar = ' '):
+        return CallCol(lambda DF: self._fn(DF).str.center(width=width, fillchar=fillchar))
 
-    def contains(self, pat, case: 'bool' = True, flags: 'int' = 0, na=None, regex: 'bool' = True):
-        return CallCol(lambda DF: self._fn(DF).str.contains(pat, case, flags, na, regex))
+    def contains(self, pat, case = True, flags = 0, na = None, regex = True):
+        return CallCol(lambda DF: self._fn(DF).str.contains(pat=pat, case=case, flags=flags, na=na, regex=regex))
 
-    def count(self, pat, flags: 'int' = 0):
-        return CallCol(lambda DF: self._fn(DF).str.count(pat, flags))
+    def count(self, pat, flags = 0):
+        return CallCol(lambda DF: self._fn(DF).str.count(pat=pat, flags=flags))
 
-    def decode(self, encoding, errors: 'str' = 'strict'):
-        return CallCol(lambda DF: self._fn(DF).str.decode(encoding, errors))
+    def decode(self, encoding, errors = 'strict'):
+        return CallCol(lambda DF: self._fn(DF).str.decode(encoding=encoding, errors=errors))
 
-    def encode(self, encoding, errors: 'str' = 'strict'):
-        return CallCol(lambda DF: self._fn(DF).str.encode(encoding, errors))
+    def encode(self, encoding, errors = 'strict'):
+        return CallCol(lambda DF: self._fn(DF).str.encode(encoding=encoding, errors=errors))
 
-    def endswith(self, pat: 'str | tuple[str, ...]', na: 'Scalar | None' = None):
-        return CallCol(lambda DF: self._fn(DF).str.endswith(pat, na))
+    def endswith(self, pat, na = None):
+        return CallCol(lambda DF: self._fn(DF).str.endswith(pat=pat, na=na))
 
-    def extract(self, pat: 'str', flags: 'int' = 0, expand: 'bool' = True):
-        return CallCol(lambda DF: self._fn(DF).str.extract(pat, flags, expand))
+    def extract(self, pat, flags = 0, expand = True):
+        return CallCol(lambda DF: self._fn(DF).str.extract(pat=pat, flags=flags, expand=expand))
 
-    def extractall(self, pat, flags: 'int' = 0):
-        return CallCol(lambda DF: self._fn(DF).str.extractall(pat, flags))
+    def extractall(self, pat, flags = 0):
+        return CallCol(lambda DF: self._fn(DF).str.extractall(pat=pat, flags=flags))
 
-    def find(self, sub, start: 'int' = 0, end=None):
-        return CallCol(lambda DF: self._fn(DF).str.find(sub, start, end))
+    def find(self, sub, start = 0, end = None):
+        return CallCol(lambda DF: self._fn(DF).str.find(sub=sub, start=start, end=end))
 
-    def findall(self, pat, flags: 'int' = 0):
-        return CallCol(lambda DF: self._fn(DF).str.findall(pat, flags))
+    def findall(self, pat, flags = 0):
+        return CallCol(lambda DF: self._fn(DF).str.findall(pat=pat, flags=flags))
 
-    def fullmatch(self, pat, case: 'bool' = True, flags: 'int' = 0, na=None):
-        return CallCol(lambda DF: self._fn(DF).str.fullmatch(pat, case, flags, na))
+    def fullmatch(self, pat, case = True, flags = 0, na = None):
+        return CallCol(lambda DF: self._fn(DF).str.fullmatch(pat=pat, case=case, flags=flags, na=na))
 
     def get(self, i):
-        return CallCol(lambda DF: self._fn(DF).str.get(i))
+        return CallCol(lambda DF: self._fn(DF).str.get(i=i))
 
-    def get_dummies(self, sep: 'str' = '|'):
-        return CallCol(lambda DF: self._fn(DF).str.get_dummies(sep))
+    def get_dummies(self, sep = '|'):
+        return CallCol(lambda DF: self._fn(DF).str.get_dummies(sep=sep))
 
-    def index(self, sub, start: 'int' = 0, end=None):
-        return CallCol(lambda DF: self._fn(DF).str.index(sub, start, end))
+    def index(self, sub, start = 0, end = None):
+        return CallCol(lambda DF: self._fn(DF).str.index(sub=sub, start=start, end=end))
 
     def isalnum(self):
         return CallCol(lambda DF: self._fn(DF).str.isalnum())
@@ -185,76 +121,76 @@ class StrAccessor(object):
         return CallCol(lambda DF: self._fn(DF).str.isupper())
 
     def join(self, sep):
-        return CallCol(lambda DF: self._fn(DF).str.join(sep))
+        return CallCol(lambda DF: self._fn(DF).str.join(sep=sep))
 
     def len(self):
         return CallCol(lambda DF: self._fn(DF).str.len())
 
-    def ljust(self, width, fillchar: 'str' = ' '):
-        return CallCol(lambda DF: self._fn(DF).str.ljust(width, fillchar))
+    def ljust(self, width, fillchar = ' '):
+        return CallCol(lambda DF: self._fn(DF).str.ljust(width=width, fillchar=fillchar))
 
     def lower(self):
         return CallCol(lambda DF: self._fn(DF).str.lower())
 
-    def lstrip(self, to_strip=None):
-        return CallCol(lambda DF: self._fn(DF).str.lstrip(to_strip))
+    def lstrip(self, to_strip = None):
+        return CallCol(lambda DF: self._fn(DF).str.lstrip(to_strip=to_strip))
 
-    def match(self, pat, case: 'bool' = True, flags: 'int' = 0, na=None):
-        return CallCol(lambda DF: self._fn(DF).str.match(pat, case, flags, na))
+    def match(self, pat, case = True, flags = 0, na = None):
+        return CallCol(lambda DF: self._fn(DF).str.match(pat=pat, case=case, flags=flags, na=na))
 
     def normalize(self, form):
-        return CallCol(lambda DF: self._fn(DF).str.normalize(form))
+        return CallCol(lambda DF: self._fn(DF).str.normalize(form=form))
 
-    def pad(self, width, side: "Literal['left', 'right', 'both']" = 'left', fillchar: 'str' = ' '):
-        return CallCol(lambda DF: self._fn(DF).str.pad(width, side, fillchar))
+    def pad(self, width, side = 'left', fillchar = ' '):
+        return CallCol(lambda DF: self._fn(DF).str.pad(width=width, side=side, fillchar=fillchar))
 
-    def partition(self, sep: 'str' = ' ', expand: 'bool' = True):
-        return CallCol(lambda DF: self._fn(DF).str.partition(sep, expand))
+    def partition(self, sep = ' ', expand = True):
+        return CallCol(lambda DF: self._fn(DF).str.partition(sep=sep, expand=expand))
 
     def removeprefix(self, prefix):
-        return CallCol(lambda DF: self._fn(DF).str.removeprefix(prefix))
+        return CallCol(lambda DF: self._fn(DF).str.removeprefix(prefix=prefix))
 
     def removesuffix(self, suffix):
-        return CallCol(lambda DF: self._fn(DF).str.removesuffix(suffix))
+        return CallCol(lambda DF: self._fn(DF).str.removesuffix(suffix=suffix))
 
     def repeat(self, repeats):
-        return CallCol(lambda DF: self._fn(DF).str.repeat(repeats))
+        return CallCol(lambda DF: self._fn(DF).str.repeat(repeats=repeats))
 
-    def replace(self, pat: 'str | re.Pattern', repl: 'str | Callable', n: 'int' = -1, case: 'bool | None' = None, flags: 'int' = 0, regex: 'bool' = False):
-        return CallCol(lambda DF: self._fn(DF).str.replace(pat, repl, n, case, flags, regex))
+    def replace(self, pat, repl, n = -1, case = None, flags = 0, regex = False):
+        return CallCol(lambda DF: self._fn(DF).str.replace(pat=pat, repl=repl, n=n, case=case, flags=flags, regex=regex))
 
-    def rfind(self, sub, start: 'int' = 0, end=None):
-        return CallCol(lambda DF: self._fn(DF).str.rfind(sub, start, end))
+    def rfind(self, sub, start = 0, end = None):
+        return CallCol(lambda DF: self._fn(DF).str.rfind(sub=sub, start=start, end=end))
 
-    def rindex(self, sub, start: 'int' = 0, end=None):
-        return CallCol(lambda DF: self._fn(DF).str.rindex(sub, start, end))
+    def rindex(self, sub, start = 0, end = None):
+        return CallCol(lambda DF: self._fn(DF).str.rindex(sub=sub, start=start, end=end))
 
-    def rjust(self, width, fillchar: 'str' = ' '):
-        return CallCol(lambda DF: self._fn(DF).str.rjust(width, fillchar))
+    def rjust(self, width, fillchar = ' '):
+        return CallCol(lambda DF: self._fn(DF).str.rjust(width=width, fillchar=fillchar))
 
-    def rpartition(self, sep: 'str' = ' ', expand: 'bool' = True):
-        return CallCol(lambda DF: self._fn(DF).str.rpartition(sep, expand))
+    def rpartition(self, sep = ' ', expand = True):
+        return CallCol(lambda DF: self._fn(DF).str.rpartition(sep=sep, expand=expand))
 
-    def rsplit(self, pat=None, n=-1, expand: 'bool' = False):
-        return CallCol(lambda DF: self._fn(DF).str.rsplit(pat, n, expand))
+    def rsplit(self, pat = None, n = -1, expand = False):
+        return CallCol(lambda DF: self._fn(DF).str.rsplit(pat=pat, n=n, expand=expand))
 
-    def rstrip(self, to_strip=None):
-        return CallCol(lambda DF: self._fn(DF).str.rstrip(to_strip))
+    def rstrip(self, to_strip = None):
+        return CallCol(lambda DF: self._fn(DF).str.rstrip(to_strip=to_strip))
 
-    def slice(self, start=None, stop=None, step=None):
-        return CallCol(lambda DF: self._fn(DF).str.slice(start, stop, step))
+    def slice(self, start = None, stop = None, step = None):
+        return CallCol(lambda DF: self._fn(DF).str.slice(start=start, stop=stop, step=step))
 
-    def slice_replace(self, start=None, stop=None, repl=None):
-        return CallCol(lambda DF: self._fn(DF).str.slice_replace(start, stop, repl))
+    def slice_replace(self, start = None, stop = None, repl = None):
+        return CallCol(lambda DF: self._fn(DF).str.slice_replace(start=start, stop=stop, repl=repl))
 
-    def split(self, pat: 'str | re.Pattern | None' = None, n=-1, expand: 'bool' = False, regex: 'bool | None' = None):
-        return CallCol(lambda DF: self._fn(DF).str.split(pat, n, expand, regex))
+    def split(self, pat = None, n = -1, expand = False, regex = None):
+        return CallCol(lambda DF: self._fn(DF).str.split(pat=pat, n=n, expand=expand, regex=regex))
 
-    def startswith(self, pat: 'str | tuple[str, ...]', na: 'Scalar | None' = None):
-        return CallCol(lambda DF: self._fn(DF).str.startswith(pat, na))
+    def startswith(self, pat, na = None):
+        return CallCol(lambda DF: self._fn(DF).str.startswith(pat=pat, na=na))
 
-    def strip(self, to_strip=None):
-        return CallCol(lambda DF: self._fn(DF).str.strip(to_strip))
+    def strip(self, to_strip = None):
+        return CallCol(lambda DF: self._fn(DF).str.strip(to_strip=to_strip))
 
     def swapcase(self):
         return CallCol(lambda DF: self._fn(DF).str.swapcase())
@@ -263,16 +199,16 @@ class StrAccessor(object):
         return CallCol(lambda DF: self._fn(DF).str.title())
 
     def translate(self, table):
-        return CallCol(lambda DF: self._fn(DF).str.translate(table))
+        return CallCol(lambda DF: self._fn(DF).str.translate(table=table))
 
     def upper(self):
         return CallCol(lambda DF: self._fn(DF).str.upper())
 
     def wrap(self, width, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).str.wrap(width, **kwargs))
+        return CallCol(lambda DF: self._fn(DF).str.wrap(width=width, kwargs=kwargs))
 
     def zfill(self, width):
-        return CallCol(lambda DF: self._fn(DF).str.zfill(width))
+        return CallCol(lambda DF: self._fn(DF).str.zfill(width=width))
 
 @dataclass
 class CatAccessor(object):
@@ -291,28 +227,28 @@ class CatAccessor(object):
         return self._fn(DF).cat.ordered
 
     def add_categories(self, *args, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).cat.add_categories(*args, **kwargs))
+        return CallCol(lambda DF: self._fn(DF).cat.add_categories(args=args, kwargs=kwargs))
 
     def as_ordered(self, *args, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).cat.as_ordered(*args, **kwargs))
+        return CallCol(lambda DF: self._fn(DF).cat.as_ordered(args=args, kwargs=kwargs))
 
     def as_unordered(self, *args, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).cat.as_unordered(*args, **kwargs))
+        return CallCol(lambda DF: self._fn(DF).cat.as_unordered(args=args, kwargs=kwargs))
 
     def remove_categories(self, *args, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).cat.remove_categories(*args, **kwargs))
+        return CallCol(lambda DF: self._fn(DF).cat.remove_categories(args=args, kwargs=kwargs))
 
     def remove_unused_categories(self, *args, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).cat.remove_unused_categories(*args, **kwargs))
+        return CallCol(lambda DF: self._fn(DF).cat.remove_unused_categories(args=args, kwargs=kwargs))
 
     def rename_categories(self, *args, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).cat.rename_categories(*args, **kwargs))
+        return CallCol(lambda DF: self._fn(DF).cat.rename_categories(args=args, kwargs=kwargs))
 
     def reorder_categories(self, *args, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).cat.reorder_categories(*args, **kwargs))
+        return CallCol(lambda DF: self._fn(DF).cat.reorder_categories(args=args, kwargs=kwargs))
 
     def set_categories(self, *args, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).cat.set_categories(*args, **kwargs))
+        return CallCol(lambda DF: self._fn(DF).cat.set_categories(args=args, kwargs=kwargs))
 
 @dataclass
 class DtAccessor(object):
@@ -435,43 +371,43 @@ class DtAccessor(object):
         return self._fn(DF).dt.year
 
     def as_unit(self, *args, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).dt.as_unit(*args, **kwargs))
+        return CallCol(lambda DF: self._fn(DF).dt.as_unit(args=args, kwargs=kwargs))
 
     def ceil(self, *args, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).dt.ceil(*args, **kwargs))
+        return CallCol(lambda DF: self._fn(DF).dt.ceil(args=args, kwargs=kwargs))
 
     def day_name(self, *args, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).dt.day_name(*args, **kwargs))
+        return CallCol(lambda DF: self._fn(DF).dt.day_name(args=args, kwargs=kwargs))
 
     def floor(self, *args, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).dt.floor(*args, **kwargs))
+        return CallCol(lambda DF: self._fn(DF).dt.floor(args=args, kwargs=kwargs))
 
     def isocalendar(self):
         return CallCol(lambda DF: self._fn(DF).dt.isocalendar())
 
     def month_name(self, *args, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).dt.month_name(*args, **kwargs))
+        return CallCol(lambda DF: self._fn(DF).dt.month_name(args=args, kwargs=kwargs))
 
     def normalize(self, *args, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).dt.normalize(*args, **kwargs))
+        return CallCol(lambda DF: self._fn(DF).dt.normalize(args=args, kwargs=kwargs))
 
     def round(self, *args, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).dt.round(*args, **kwargs))
+        return CallCol(lambda DF: self._fn(DF).dt.round(args=args, kwargs=kwargs))
 
     def strftime(self, *args, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).dt.strftime(*args, **kwargs))
+        return CallCol(lambda DF: self._fn(DF).dt.strftime(args=args, kwargs=kwargs))
 
     def to_period(self, *args, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).dt.to_period(*args, **kwargs))
+        return CallCol(lambda DF: self._fn(DF).dt.to_period(args=args, kwargs=kwargs))
 
     def to_pydatetime(self):
         return CallCol(lambda DF: self._fn(DF).dt.to_pydatetime())
 
     def tz_convert(self, *args, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).dt.tz_convert(*args, **kwargs))
+        return CallCol(lambda DF: self._fn(DF).dt.tz_convert(args=args, kwargs=kwargs))
 
     def tz_localize(self, *args, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).dt.tz_localize(*args, **kwargs))
+        return CallCol(lambda DF: self._fn(DF).dt.tz_localize(args=args, kwargs=kwargs))
 
 @dataclass
 class SparseAccessor(object):
@@ -493,11 +429,11 @@ class SparseAccessor(object):
     def sp_values(self, DF):
         return self._fn(DF).sparse.sp_values
 
-    def from_coo(self, A, dense_index: 'bool' = False):
-        return CallCol(lambda DF: self._fn(DF).sparse.from_coo(A, dense_index))
+    def from_coo(self, A, dense_index = False):
+        return CallCol(lambda DF: self._fn(DF).sparse.from_coo(A=A, dense_index=dense_index))
 
-    def to_coo(self, row_levels=(0,), column_levels=(1,), sort_labels: 'bool' = False):
-        return CallCol(lambda DF: self._fn(DF).sparse.to_coo(row_levels, column_levels, sort_labels))
+    def to_coo(self, row_levels = (0,), column_levels = (1,), sort_labels = False):
+        return CallCol(lambda DF: self._fn(DF).sparse.to_coo(row_levels=row_levels, column_levels=column_levels, sort_labels=sort_labels))
 
     def to_dense(self):
         return CallCol(lambda DF: self._fn(DF).sparse.to_dense())
@@ -506,41 +442,41 @@ class SparseAccessor(object):
 class PlotAccessor(object):
     _fn: Callable
 
-    def area(self, x=None, y=None, stacked: 'bool' = True, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).plot.area(x, y, stacked, **kwargs))
+    def area(self, x = None, y = None, stacked = True, **kwargs):
+        return CallCol(lambda DF: self._fn(DF).plot.area(x=x, y=y, stacked=stacked, kwargs=kwargs))
 
-    def bar(self, x=None, y=None, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).plot.bar(x, y, **kwargs))
+    def bar(self, x = None, y = None, **kwargs):
+        return CallCol(lambda DF: self._fn(DF).plot.bar(x=x, y=y, kwargs=kwargs))
 
-    def barh(self, x=None, y=None, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).plot.barh(x, y, **kwargs))
+    def barh(self, x = None, y = None, **kwargs):
+        return CallCol(lambda DF: self._fn(DF).plot.barh(x=x, y=y, kwargs=kwargs))
 
-    def box(self, by=None, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).plot.box(by, **kwargs))
+    def box(self, by = None, **kwargs):
+        return CallCol(lambda DF: self._fn(DF).plot.box(by=by, kwargs=kwargs))
 
-    def density(self, bw_method=None, ind=None, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).plot.density(bw_method, ind, **kwargs))
+    def density(self, bw_method = None, ind = None, **kwargs):
+        return CallCol(lambda DF: self._fn(DF).plot.density(bw_method=bw_method, ind=ind, kwargs=kwargs))
 
-    def hexbin(self, x, y, C=None, reduce_C_function=None, gridsize=None, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).plot.hexbin(x, y, C, reduce_C_function, gridsize, **kwargs))
+    def hexbin(self, x, y, C = None, reduce_C_function = None, gridsize = None, **kwargs):
+        return CallCol(lambda DF: self._fn(DF).plot.hexbin(x=x, y=y, C=C, reduce_C_function=reduce_C_function, gridsize=gridsize, kwargs=kwargs))
 
-    def hist(self, by=None, bins: 'int' = 10, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).plot.hist(by, bins, **kwargs))
+    def hist(self, by = None, bins = 10, **kwargs):
+        return CallCol(lambda DF: self._fn(DF).plot.hist(by=by, bins=bins, kwargs=kwargs))
 
-    def kde(self, bw_method=None, ind=None, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).plot.kde(bw_method, ind, **kwargs))
+    def kde(self, bw_method = None, ind = None, **kwargs):
+        return CallCol(lambda DF: self._fn(DF).plot.kde(bw_method=bw_method, ind=ind, kwargs=kwargs))
 
-    def line(self, x=None, y=None, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).plot.line(x, y, **kwargs))
+    def line(self, x = None, y = None, **kwargs):
+        return CallCol(lambda DF: self._fn(DF).plot.line(x=x, y=y, kwargs=kwargs))
 
     def pie(self, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).plot.pie(**kwargs))
+        return CallCol(lambda DF: self._fn(DF).plot.pie(kwargs=kwargs))
 
-    def scatter(self, x, y, s=None, c=None, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).plot.scatter(x, y, s, c, **kwargs))
+    def scatter(self, x, y, s = None, c = None, **kwargs):
+        return CallCol(lambda DF: self._fn(DF).plot.scatter(x=x, y=y, s=s, c=c, kwargs=kwargs))
 
     def __call__(self, *args, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).plot.__call__(*args, **kwargs))
+        return CallCol(lambda DF: self._fn(DF).plot.__call__(args=args, kwargs=kwargs))
 
 class BaseCol(object):
     _is_col = True
@@ -692,58 +628,58 @@ class BaseCol(object):
         return CallCol(lambda DF: self.__call__(DF).__abs__())
 
     def __add__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__add__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__add__(other=decide_if_call(other, DF)))
 
     def __and__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__and__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__and__(other=decide_if_call(other, DF)))
 
-    def __array__(self, dtype: 'npt.DTypeLike | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).__array__(dtype))
+    def __array__(self, dtype = None):
+        return CallCol(lambda DF: self.__call__(DF).__array__(dtype=dtype))
 
-    def __array_ufunc__(self, ufunc: 'np.ufunc', method: 'str', *inputs: 'Any', **kwargs: 'Any'):
-        return CallCol(lambda DF: self.__call__(DF).__array_ufunc__(ufunc, method, inputs, **kwargs))
+    def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).__array_ufunc__(ufunc=ufunc, method=method, inputs=inputs, kwargs=kwargs))
 
     def __bool__(self):
         return CallCol(lambda DF: self.__call__(DF).__bool__())
 
-    def __class__(self, data=None, index=None, dtype: 'Dtype | None' = None, name=None, copy: 'bool | None' = None, fastpath: 'bool' = False):
-        return CallCol(lambda DF: self.__call__(DF).__class__(decide_if_call(data, DF), index, dtype, name, copy, fastpath))
+    def __class__(self, data = None, index = None, dtype = None, name = None, copy = None, fastpath = False):
+        return CallCol(lambda DF: self.__call__(DF).__class__(data=decide_if_call(data, DF), index=index, dtype=dtype, name=name, copy=copy, fastpath=fastpath))
 
     def __contains__(self, key):
-        return CallCol(lambda DF: self.__call__(DF).__contains__(key))
+        return CallCol(lambda DF: self.__call__(DF).__contains__(key=key))
 
     def __divmod__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__divmod__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__divmod__(other=decide_if_call(other, DF)))
 
     def __eq__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__eq__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__eq__(other=decide_if_call(other, DF)))
 
     def __float__(self):
         return CallCol(lambda DF: self.__call__(DF).__float__())
 
     def __floordiv__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__floordiv__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__floordiv__(other=decide_if_call(other, DF)))
 
     def __ge__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__ge__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__ge__(other=decide_if_call(other, DF)))
 
     def __gt__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__gt__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__gt__(other=decide_if_call(other, DF)))
 
     def __iadd__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__iadd__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__iadd__(other=decide_if_call(other, DF)))
 
     def __iand__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__iand__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__iand__(other=decide_if_call(other, DF)))
 
     def __ifloordiv__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__ifloordiv__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__ifloordiv__(other=decide_if_call(other, DF)))
 
     def __imod__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__imod__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__imod__(other=decide_if_call(other, DF)))
 
     def __imul__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__imul__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__imul__(other=decide_if_call(other, DF)))
 
     def __int__(self):
         return CallCol(lambda DF: self.__call__(DF).__int__())
@@ -752,40 +688,40 @@ class BaseCol(object):
         return CallCol(lambda DF: self.__call__(DF).__invert__())
 
     def __ior__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__ior__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__ior__(other=decide_if_call(other, DF)))
 
     def __ipow__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__ipow__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__ipow__(other=decide_if_call(other, DF)))
 
     def __isub__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__isub__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__isub__(other=decide_if_call(other, DF)))
 
     def __itruediv__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__itruediv__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__itruediv__(other=decide_if_call(other, DF)))
 
     def __ixor__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__ixor__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__ixor__(other=decide_if_call(other, DF)))
 
     def __le__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__le__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__le__(other=decide_if_call(other, DF)))
 
     def __len__(self):
         return CallCol(lambda DF: self.__call__(DF).__len__())
 
     def __lt__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__lt__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__lt__(other=decide_if_call(other, DF)))
 
     def __matmul__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__matmul__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__matmul__(other=decide_if_call(other, DF)))
 
     def __mod__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__mod__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__mod__(other=decide_if_call(other, DF)))
 
     def __mul__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__mul__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__mul__(other=decide_if_call(other, DF)))
 
     def __ne__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__ne__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__ne__(other=decide_if_call(other, DF)))
 
     def __neg__(self):
         return CallCol(lambda DF: self.__call__(DF).__neg__())
@@ -794,274 +730,274 @@ class BaseCol(object):
         return CallCol(lambda DF: self.__call__(DF).__nonzero__())
 
     def __or__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__or__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__or__(other=decide_if_call(other, DF)))
 
     def __pos__(self):
         return CallCol(lambda DF: self.__call__(DF).__pos__())
 
     def __pow__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__pow__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__pow__(other=decide_if_call(other, DF)))
 
     def __radd__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__radd__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__radd__(other=decide_if_call(other, DF)))
 
     def __rand__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__rand__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__rand__(other=decide_if_call(other, DF)))
 
     def __rdivmod__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__rdivmod__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__rdivmod__(other=decide_if_call(other, DF)))
 
     def __rfloordiv__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__rfloordiv__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__rfloordiv__(other=decide_if_call(other, DF)))
 
     def __rmatmul__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__rmatmul__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__rmatmul__(other=decide_if_call(other, DF)))
 
     def __rmod__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__rmod__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__rmod__(other=decide_if_call(other, DF)))
 
     def __rmul__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__rmul__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__rmul__(other=decide_if_call(other, DF)))
 
     def __ror__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__ror__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__ror__(other=decide_if_call(other, DF)))
 
-    def __round__(self, decimals: 'int' = 0):
-        return CallCol(lambda DF: self.__call__(DF).__round__(decimals))
+    def __round__(self, decimals = 0):
+        return CallCol(lambda DF: self.__call__(DF).__round__(decimals=decimals))
 
     def __rpow__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__rpow__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__rpow__(other=decide_if_call(other, DF)))
 
     def __rsub__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__rsub__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__rsub__(other=decide_if_call(other, DF)))
 
     def __rtruediv__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__rtruediv__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__rtruediv__(other=decide_if_call(other, DF)))
 
     def __rxor__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__rxor__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__rxor__(other=decide_if_call(other, DF)))
 
     def __sub__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__sub__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__sub__(other=decide_if_call(other, DF)))
 
     def __truediv__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__truediv__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__truediv__(other=decide_if_call(other, DF)))
 
     def __xor__(self, other):
-        return CallCol(lambda DF: self.__call__(DF).__xor__(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).__xor__(other=decide_if_call(other, DF)))
 
     def abs(self):
         return CallCol(lambda DF: self.__call__(DF).abs())
 
-    def add(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).add(decide_if_call(other, DF), level, fill_value, axis))
+    def add(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).add(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def add_prefix(self, prefix: 'str', axis: 'Axis | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).add_prefix(prefix, axis))
+    def add_prefix(self, prefix, axis = None):
+        return CallCol(lambda DF: self.__call__(DF).add_prefix(prefix=prefix, axis=axis))
 
-    def add_suffix(self, suffix: 'str', axis: 'Axis | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).add_suffix(suffix, axis))
+    def add_suffix(self, suffix, axis = None):
+        return CallCol(lambda DF: self.__call__(DF).add_suffix(suffix=suffix, axis=axis))
 
-    def agg(self, func=None, axis: 'Axis' = 0, *args, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).agg(func, axis, *args, **kwargs))
+    def agg(self, func = None, axis = 0, *args, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).agg(func=func, axis=axis, args=args, kwargs=kwargs))
 
-    def aggregate(self, func=None, axis: 'Axis' = 0, *args, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).aggregate(func, axis, *args, **kwargs))
+    def aggregate(self, func = None, axis = 0, *args, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).aggregate(func=func, axis=axis, args=args, kwargs=kwargs))
 
-    def align(self, other: 'Series', join: 'AlignJoin' = 'outer', axis: 'Axis | None' = None, level: 'Level' = None, copy: 'bool | None' = None, fill_value: 'Hashable' = None, method: 'FillnaOptions | None' = None, limit: 'int | None' = None, fill_axis: 'Axis' = 0, broadcast_axis: 'Axis | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).align(decide_if_call(other, DF), join, axis, level, copy, fill_value, method, limit, fill_axis, broadcast_axis))
+    def align(self, other, join = 'outer', axis = None, level = None, copy = None, fill_value = None, method = None, limit = None, fill_axis = 0, broadcast_axis = None):
+        return CallCol(lambda DF: self.__call__(DF).align(other=decide_if_call(other, DF), join=join, axis=axis, level=level, copy=copy, fill_value=fill_value, method=method, limit=limit, fill_axis=fill_axis, broadcast_axis=broadcast_axis))
 
-    def all(self, axis: 'Axis' = 0, bool_only=None, skipna: 'bool_t' = True, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).all(axis, bool_only, skipna, **kwargs))
+    def all(self, axis = 0, bool_only = None, skipna = True, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).all(axis=axis, bool_only=bool_only, skipna=skipna, kwargs=kwargs))
 
-    def any(self, axis: 'Axis' = 0, bool_only=None, skipna: 'bool_t' = True, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).any(axis, bool_only, skipna, **kwargs))
+    def any(self, axis = 0, bool_only = None, skipna = True, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).any(axis=axis, bool_only=bool_only, skipna=skipna, kwargs=kwargs))
 
-    def apply(self, func: 'AggFuncType', convert_dtype: 'bool' = True, args: 'tuple[Any, ...]' = (), **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).apply(func, convert_dtype, *args, **kwargs))
+    def apply(self, func, convert_dtype = True, args = (), **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).apply(func=func, convert_dtype=convert_dtype, args=args, kwargs=kwargs))
 
-    def argmax(self, axis: 'AxisInt | None' = None, skipna: 'bool' = True, *args, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).argmax(axis, skipna, *args, **kwargs))
+    def argmax(self, axis = None, skipna = True, *args, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).argmax(axis=axis, skipna=skipna, args=args, kwargs=kwargs))
 
-    def argmin(self, axis: 'AxisInt | None' = None, skipna: 'bool' = True, *args, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).argmin(axis, skipna, *args, **kwargs))
+    def argmin(self, axis = None, skipna = True, *args, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).argmin(axis=axis, skipna=skipna, args=args, kwargs=kwargs))
 
-    def argsort(self, axis: 'Axis' = 0, kind: 'SortKind' = 'quicksort', order: 'None' = None):
-        return CallCol(lambda DF: self.__call__(DF).argsort(axis, kind, order))
+    def argsort(self, axis = 0, kind = 'quicksort', order = None):
+        return CallCol(lambda DF: self.__call__(DF).argsort(axis=axis, kind=kind, order=order))
 
-    def asfreq(self, freq: 'Frequency', method: 'FillnaOptions | None' = None, how: 'str | None' = None, normalize: 'bool' = False, fill_value: 'Hashable' = None):
-        return CallCol(lambda DF: self.__call__(DF).asfreq(freq, method, how, normalize, fill_value))
+    def asfreq(self, freq, method = None, how = None, normalize = False, fill_value = None):
+        return CallCol(lambda DF: self.__call__(DF).asfreq(freq=freq, method=method, how=how, normalize=normalize, fill_value=fill_value))
 
-    def asof(self, where, subset=None):
-        return CallCol(lambda DF: self.__call__(DF).asof(where, subset))
+    def asof(self, where, subset = None):
+        return CallCol(lambda DF: self.__call__(DF).asof(where=where, subset=subset))
 
-    def astype(self, dtype, copy: 'bool_t | None' = None, errors: 'IgnoreRaise' = 'raise'):
-        return CallCol(lambda DF: self.__call__(DF).astype(dtype, copy, errors))
+    def astype(self, dtype, copy = None, errors = 'raise'):
+        return CallCol(lambda DF: self.__call__(DF).astype(dtype=dtype, copy=copy, errors=errors))
 
-    def at_time(self, time, asof: 'bool_t' = False, axis: 'Axis | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).at_time(time, asof, axis))
+    def at_time(self, time, asof = False, axis = None):
+        return CallCol(lambda DF: self.__call__(DF).at_time(time=time, asof=asof, axis=axis))
 
-    def autocorr(self, lag: 'int' = 1):
-        return CallCol(lambda DF: self.__call__(DF).autocorr(lag))
+    def autocorr(self, lag = 1):
+        return CallCol(lambda DF: self.__call__(DF).autocorr(lag=lag))
 
-    def backfill(self, axis: 'None | Axis' = None, inplace: 'bool_t' = False, limit: 'None | int' = None, downcast: 'dict | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).backfill(axis, inplace, limit, downcast))
+    def backfill(self, axis = None, inplace = False, limit = None, downcast = None):
+        return CallCol(lambda DF: self.__call__(DF).backfill(axis=axis, inplace=inplace, limit=limit, downcast=downcast))
 
-    def between(self, left, right, inclusive: "Literal['both', 'neither', 'left', 'right']" = 'both'):
-        return CallCol(lambda DF: self.__call__(DF).between(left, right, inclusive))
+    def between(self, left, right, inclusive = 'both'):
+        return CallCol(lambda DF: self.__call__(DF).between(left=left, right=right, inclusive=inclusive))
 
-    def between_time(self, start_time, end_time, inclusive: 'IntervalClosedType' = 'both', axis: 'Axis | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).between_time(start_time, end_time, inclusive, axis))
+    def between_time(self, start_time, end_time, inclusive = 'both', axis = None):
+        return CallCol(lambda DF: self.__call__(DF).between_time(start_time=start_time, end_time=end_time, inclusive=inclusive, axis=axis))
 
-    def bfill(self, axis: 'None | Axis' = None, inplace: 'bool' = False, limit: 'None | int' = None, downcast: 'dict | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).bfill(axis, inplace, limit, downcast))
+    def bfill(self, axis = None, inplace = False, limit = None, downcast = None):
+        return CallCol(lambda DF: self.__call__(DF).bfill(axis=axis, inplace=inplace, limit=limit, downcast=downcast))
 
     def bool(self):
         return CallCol(lambda DF: self.__call__(DF).bool())
 
-    def clip(self, lower=None, upper=None, axis: 'Axis | None' = None, inplace: 'bool' = False, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).clip(lower, upper, axis, inplace, **kwargs))
+    def clip(self, lower = None, upper = None, axis = None, inplace = False, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).clip(lower=lower, upper=upper, axis=axis, inplace=inplace, kwargs=kwargs))
 
-    def combine(self, other: 'Series | Hashable', func: 'Callable[[Hashable, Hashable], Hashable]', fill_value: 'Hashable' = None):
-        return CallCol(lambda DF: self.__call__(DF).combine(decide_if_call(other, DF), func, fill_value))
+    def combine(self, other, func, fill_value = None):
+        return CallCol(lambda DF: self.__call__(DF).combine(other=decide_if_call(other, DF), func=func, fill_value=fill_value))
 
     def combine_first(self, other):
-        return CallCol(lambda DF: self.__call__(DF).combine_first(decide_if_call(other, DF)))
+        return CallCol(lambda DF: self.__call__(DF).combine_first(other=decide_if_call(other, DF)))
 
-    def compare(self, other: 'Series', align_axis: 'Axis' = 1, keep_shape: 'bool' = False, keep_equal: 'bool' = False, result_names: 'Suffixes' = ('self', 'other')):
-        return CallCol(lambda DF: self.__call__(DF).compare(decide_if_call(other, DF), align_axis, keep_shape, keep_equal, result_names))
+    def compare(self, other, align_axis = 1, keep_shape = False, keep_equal = False, result_names = ('self', 'other')):
+        return CallCol(lambda DF: self.__call__(DF).compare(other=decide_if_call(other, DF), align_axis=align_axis, keep_shape=keep_shape, keep_equal=keep_equal, result_names=result_names))
 
-    def convert_dtypes(self, infer_objects: 'bool_t' = True, convert_string: 'bool_t' = True, convert_integer: 'bool_t' = True, convert_boolean: 'bool_t' = True, convert_floating: 'bool_t' = True, dtype_backend: 'DtypeBackend' = 'numpy_nullable'):
-        return CallCol(lambda DF: self.__call__(DF).convert_dtypes(infer_objects, convert_string, convert_integer, convert_boolean, convert_floating, dtype_backend))
+    def convert_dtypes(self, infer_objects = True, convert_string = True, convert_integer = True, convert_boolean = True, convert_floating = True, dtype_backend = 'numpy_nullable'):
+        return CallCol(lambda DF: self.__call__(DF).convert_dtypes(infer_objects=infer_objects, convert_string=convert_string, convert_integer=convert_integer, convert_boolean=convert_boolean, convert_floating=convert_floating, dtype_backend=dtype_backend))
 
-    def copy(self, deep: 'bool_t | None' = True):
-        return CallCol(lambda DF: self.__call__(DF).copy(deep))
+    def copy(self, deep = True):
+        return CallCol(lambda DF: self.__call__(DF).copy(deep=deep))
 
-    def corr(self, other: 'Series', method: 'CorrelationMethod' = 'pearson', min_periods: 'int | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).corr(decide_if_call(other, DF), method, min_periods))
+    def corr(self, other, method = 'pearson', min_periods = None):
+        return CallCol(lambda DF: self.__call__(DF).corr(other=decide_if_call(other, DF), method=method, min_periods=min_periods))
 
     def count(self):
         return CallCol(lambda DF: self.__call__(DF).count())
 
-    def cov(self, other: 'Series', min_periods: 'int | None' = None, ddof: 'int | None' = 1):
-        return CallCol(lambda DF: self.__call__(DF).cov(decide_if_call(other, DF), min_periods, ddof))
+    def cov(self, other, min_periods = None, ddof = 1):
+        return CallCol(lambda DF: self.__call__(DF).cov(other=decide_if_call(other, DF), min_periods=min_periods, ddof=ddof))
 
-    def cummax(self, axis: 'Axis | None' = None, skipna: 'bool_t' = True, *args, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).cummax(axis, skipna, *args, **kwargs))
+    def cummax(self, axis = None, skipna = True, *args, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).cummax(axis=axis, skipna=skipna, args=args, kwargs=kwargs))
 
-    def cummin(self, axis: 'Axis | None' = None, skipna: 'bool_t' = True, *args, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).cummin(axis, skipna, *args, **kwargs))
+    def cummin(self, axis = None, skipna = True, *args, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).cummin(axis=axis, skipna=skipna, args=args, kwargs=kwargs))
 
-    def cumprod(self, axis: 'Axis | None' = None, skipna: 'bool_t' = True, *args, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).cumprod(axis, skipna, *args, **kwargs))
+    def cumprod(self, axis = None, skipna = True, *args, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).cumprod(axis=axis, skipna=skipna, args=args, kwargs=kwargs))
 
-    def cumsum(self, axis: 'Axis | None' = None, skipna: 'bool_t' = True, *args, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).cumsum(axis, skipna, *args, **kwargs))
+    def cumsum(self, axis = None, skipna = True, *args, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).cumsum(axis=axis, skipna=skipna, args=args, kwargs=kwargs))
 
-    def describe(self, percentiles=None, include=None, exclude=None):
-        return CallCol(lambda DF: self.__call__(DF).describe(percentiles, include, exclude))
+    def describe(self, percentiles = None, include = None, exclude = None):
+        return CallCol(lambda DF: self.__call__(DF).describe(percentiles=percentiles, include=include, exclude=exclude))
 
-    def diff(self, periods: 'int' = 1):
-        return CallCol(lambda DF: self.__call__(DF).diff(periods))
+    def diff(self, periods = 1):
+        return CallCol(lambda DF: self.__call__(DF).diff(periods=periods))
 
-    def div(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).div(decide_if_call(other, DF), level, fill_value, axis))
+    def div(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).div(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def divide(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).divide(decide_if_call(other, DF), level, fill_value, axis))
+    def divide(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).divide(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def divmod(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).divmod(decide_if_call(other, DF), level, fill_value, axis))
+    def divmod(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).divmod(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def dot(self, other: 'AnyArrayLike'):
-        return CallCol(lambda DF: self.__call__(DF).dot(decide_if_call(other, DF)))
+    def dot(self, other):
+        return CallCol(lambda DF: self.__call__(DF).dot(other=decide_if_call(other, DF)))
 
-    def drop(self, labels: 'IndexLabel' = None, axis: 'Axis' = 0, index: 'IndexLabel' = None, columns: 'IndexLabel' = None, level: 'Level | None' = None, inplace: 'bool' = False, errors: 'IgnoreRaise' = 'raise'):
-        return CallCol(lambda DF: self.__call__(DF).drop(labels, axis, index, columns, level, inplace, errors))
+    def drop(self, labels = None, axis = 0, index = None, columns = None, level = None, inplace = False, errors = 'raise'):
+        return CallCol(lambda DF: self.__call__(DF).drop(labels=labels, axis=axis, index=index, columns=columns, level=level, inplace=inplace, errors=errors))
 
-    def drop_duplicates(self, keep: 'DropKeep' = 'first', inplace: 'bool' = False, ignore_index: 'bool' = False):
-        return CallCol(lambda DF: self.__call__(DF).drop_duplicates(keep, inplace, ignore_index))
+    def drop_duplicates(self, keep = 'first', inplace = False, ignore_index = False):
+        return CallCol(lambda DF: self.__call__(DF).drop_duplicates(keep=keep, inplace=inplace, ignore_index=ignore_index))
 
-    def droplevel(self, level: 'IndexLabel', axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).droplevel(level, axis))
+    def droplevel(self, level, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).droplevel(level=level, axis=axis))
 
-    def dropna(self, axis: 'Axis' = 0, inplace: 'bool' = False, how: 'AnyAll | None' = None, ignore_index: 'bool' = False):
-        return CallCol(lambda DF: self.__call__(DF).dropna(axis, inplace, how, ignore_index))
+    def dropna(self, axis = 0, inplace = False, how = None, ignore_index = False):
+        return CallCol(lambda DF: self.__call__(DF).dropna(axis=axis, inplace=inplace, how=how, ignore_index=ignore_index))
 
-    def duplicated(self, keep: 'DropKeep' = 'first'):
-        return CallCol(lambda DF: self.__call__(DF).duplicated(keep))
+    def duplicated(self, keep = 'first'):
+        return CallCol(lambda DF: self.__call__(DF).duplicated(keep=keep))
 
-    def eq(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).eq(decide_if_call(other, DF), level, fill_value, axis))
+    def eq(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).eq(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def equals(self, other: 'object'):
-        return CallCol(lambda DF: self.__call__(DF).equals(decide_if_call(other, DF)))
+    def equals(self, other):
+        return CallCol(lambda DF: self.__call__(DF).equals(other=decide_if_call(other, DF)))
 
-    def ewm(self, com: 'float | None' = None, span: 'float | None' = None, halflife: 'float | TimedeltaConvertibleTypes | None' = None, alpha: 'float | None' = None, min_periods: 'int | None' = 0, adjust: 'bool_t' = True, ignore_na: 'bool_t' = False, axis: 'Axis' = 0, times: 'np.ndarray | DataFrame | Series | None' = None, method: 'str' = 'single'):
-        return CallCol(lambda DF: self.__call__(DF).ewm(com, span, halflife, alpha, min_periods, adjust, ignore_na, axis, decide_if_call(times, DF), method))
+    def ewm(self, com = None, span = None, halflife = None, alpha = None, min_periods = 0, adjust = True, ignore_na = False, axis = 0, times = None, method = 'single'):
+        return CallCol(lambda DF: self.__call__(DF).ewm(com=com, span=span, halflife=halflife, alpha=alpha, min_periods=min_periods, adjust=adjust, ignore_na=ignore_na, axis=axis, times=decide_if_call(times, DF), method=method))
 
-    def expanding(self, min_periods: 'int' = 1, axis: 'Axis' = 0, method: 'str' = 'single'):
-        return CallCol(lambda DF: self.__call__(DF).expanding(min_periods, axis, method))
+    def expanding(self, min_periods = 1, axis = 0, method = 'single'):
+        return CallCol(lambda DF: self.__call__(DF).expanding(min_periods=min_periods, axis=axis, method=method))
 
-    def explode(self, ignore_index: 'bool' = False):
-        return CallCol(lambda DF: self.__call__(DF).explode(ignore_index))
+    def explode(self, ignore_index = False):
+        return CallCol(lambda DF: self.__call__(DF).explode(ignore_index=ignore_index))
 
-    def factorize(self, sort: 'bool' = False, use_na_sentinel: 'bool' = True):
-        return CallCol(lambda DF: self.__call__(DF).factorize(sort, use_na_sentinel))
+    def factorize(self, sort = False, use_na_sentinel = True):
+        return CallCol(lambda DF: self.__call__(DF).factorize(sort=sort, use_na_sentinel=use_na_sentinel))
 
-    def ffill(self, axis: 'None | Axis' = None, inplace: 'bool' = False, limit: 'None | int' = None, downcast: 'dict | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).ffill(axis, inplace, limit, downcast))
+    def ffill(self, axis = None, inplace = False, limit = None, downcast = None):
+        return CallCol(lambda DF: self.__call__(DF).ffill(axis=axis, inplace=inplace, limit=limit, downcast=downcast))
 
-    def fillna(self, value: 'Hashable | Mapping | Series | DataFrame' = None, method: 'FillnaOptions | None' = None, axis: 'Axis | None' = None, inplace: 'bool' = False, limit: 'int | None' = None, downcast: 'dict | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).fillna(decide_if_call(value, DF), method=method, axis=axis, inplace=inplace, limit=limit, downcast=downcast))
+    def fillna(self, value = None, method = None, axis = None, inplace = False, limit = None, downcast = None):
+        return CallCol(lambda DF: self.__call__(DF).fillna(value=decide_if_call(value, DF), method=method, axis=axis, inplace=inplace, limit=limit, downcast=downcast))
 
-    def filter(self, items=None, like: 'str | None' = None, regex: 'str | None' = None, axis: 'Axis | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).filter(items, like, regex, axis))
+    def filter(self, items = None, like = None, regex = None, axis = None):
+        return CallCol(lambda DF: self.__call__(DF).filter(items=items, like=like, regex=regex, axis=axis))
 
     def first(self, offset):
-        return CallCol(lambda DF: self.__call__(DF).first(offset))
+        return CallCol(lambda DF: self.__call__(DF).first(offset=offset))
 
     def first_valid_index(self):
         return CallCol(lambda DF: self.__call__(DF).first_valid_index())
 
-    def floordiv(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).floordiv(decide_if_call(other, DF), level, fill_value, axis))
+    def floordiv(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).floordiv(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def ge(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).ge(decide_if_call(other, DF), level, fill_value, axis))
+    def ge(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).ge(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def get(self, key, default=None):
-        return CallCol(lambda DF: self.__call__(DF).get(key, default))
+    def get(self, key, default = None):
+        return CallCol(lambda DF: self.__call__(DF).get(key=key, default=default))
 
-    def groupby(self, by=None, axis: 'Axis' = 0, level: 'IndexLabel' = None, as_index: 'bool' = True, sort: 'bool' = True, group_keys: 'bool' = True, observed: 'bool' = False, dropna: 'bool' = True):
-        return CallCol(lambda DF: self.__call__(DF).groupby(by, axis, level, as_index, sort, group_keys, observed, dropna))
+    def groupby(self, by = None, axis = 0, level = None, as_index = True, sort = True, group_keys = True, observed = False, dropna = True):
+        return CallCol(lambda DF: self.__call__(DF).groupby(by=by, axis=axis, level=level, as_index=as_index, sort=sort, group_keys=group_keys, observed=observed, dropna=dropna))
 
-    def gt(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).gt(decide_if_call(other, DF), level, fill_value, axis))
+    def gt(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).gt(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def head(self, n: 'int' = 5):
-        return CallCol(lambda DF: self.__call__(DF).head(n))
+    def head(self, n = 5):
+        return CallCol(lambda DF: self.__call__(DF).head(n=n))
 
-    def hist(self, by=None, ax=None, grid: 'bool' = True, xlabelsize: 'int | None' = None, xrot: 'float | None' = None, ylabelsize: 'int | None' = None, yrot: 'float | None' = None, figsize: 'tuple[int, int] | None' = None, bins: 'int | Sequence[int]' = 10, backend: 'str | None' = None, legend: 'bool' = False, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).hist(by, ax, grid, xlabelsize, xrot, ylabelsize, yrot, figsize, bins, backend, legend, **kwargs))
+    def hist(self, by = None, ax = None, grid = True, xlabelsize = None, xrot = None, ylabelsize = None, yrot = None, figsize = None, bins = 10, backend = None, legend = False, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).hist(by=by, ax=ax, grid=grid, xlabelsize=xlabelsize, xrot=xrot, ylabelsize=ylabelsize, yrot=yrot, figsize=figsize, bins=bins, backend=backend, legend=legend, kwargs=kwargs))
 
-    def idxmax(self, axis: 'Axis' = 0, skipna: 'bool' = True, *args, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).idxmax(axis, skipna, *args, **kwargs))
+    def idxmax(self, axis = 0, skipna = True, *args, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).idxmax(axis=axis, skipna=skipna, args=args, kwargs=kwargs))
 
-    def idxmin(self, axis: 'Axis' = 0, skipna: 'bool' = True, *args, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).idxmin(axis, skipna, *args, **kwargs))
+    def idxmin(self, axis = 0, skipna = True, *args, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).idxmin(axis=axis, skipna=skipna, args=args, kwargs=kwargs))
 
-    def infer_objects(self, copy: 'bool_t | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).infer_objects(copy))
+    def infer_objects(self, copy = None):
+        return CallCol(lambda DF: self.__call__(DF).infer_objects(copy=copy))
 
-    def info(self, verbose: 'bool | None' = None, buf: 'IO[str] | None' = None, max_cols: 'int | None' = None, memory_usage: 'bool | str | None' = None, show_counts: 'bool' = True):
-        return CallCol(lambda DF: self.__call__(DF).info(verbose, buf, max_cols, memory_usage, show_counts))
+    def info(self, verbose = None, buf = None, max_cols = None, memory_usage = None, show_counts = True):
+        return CallCol(lambda DF: self.__call__(DF).info(verbose=verbose, buf=buf, max_cols=max_cols, memory_usage=memory_usage, show_counts=show_counts))
 
-    def interpolate(self, method: 'str' = 'linear', axis: 'Axis' = 0, limit: 'int | None' = None, inplace: 'bool' = False, limit_direction: 'str | None' = None, limit_area: 'str | None' = None, downcast: 'str | None' = None, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).interpolate(method, axis, limit, inplace, limit_direction, limit_area, downcast, **kwargs))
+    def interpolate(self, method = 'linear', axis = 0, limit = None, inplace = False, limit_direction = None, limit_area = None, downcast = None, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).interpolate(method=method, axis=axis, limit=limit, inplace=inplace, limit_direction=limit_direction, limit_area=limit_area, downcast=downcast, kwargs=kwargs))
 
     def isin(self, values):
-        return CallCol(lambda DF: self.__call__(DF).isin(values))
+        return CallCol(lambda DF: self.__call__(DF).isin(values=values))
 
     def isna(self):
         return CallCol(lambda DF: self.__call__(DF).isna())
@@ -1078,62 +1014,62 @@ class BaseCol(object):
     def keys(self):
         return CallCol(lambda DF: self.__call__(DF).keys())
 
-    def kurt(self, axis: 'Axis | None' = 0, skipna: 'bool_t' = True, numeric_only: 'bool_t' = False, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).kurt(axis, skipna, numeric_only, **kwargs))
+    def kurt(self, axis = 0, skipna = True, numeric_only = False, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).kurt(axis=axis, skipna=skipna, numeric_only=numeric_only, kwargs=kwargs))
 
-    def kurtosis(self, axis: 'Axis | None' = 0, skipna: 'bool_t' = True, numeric_only: 'bool_t' = False, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).kurtosis(axis, skipna, numeric_only, **kwargs))
+    def kurtosis(self, axis = 0, skipna = True, numeric_only = False, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).kurtosis(axis=axis, skipna=skipna, numeric_only=numeric_only, kwargs=kwargs))
 
     def last(self, offset):
-        return CallCol(lambda DF: self.__call__(DF).last(offset))
+        return CallCol(lambda DF: self.__call__(DF).last(offset=offset))
 
     def last_valid_index(self):
         return CallCol(lambda DF: self.__call__(DF).last_valid_index())
 
-    def le(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).le(decide_if_call(other, DF), level, fill_value, axis))
+    def le(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).le(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def lt(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).lt(decide_if_call(other, DF), level, fill_value, axis))
+    def lt(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).lt(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def map(self, arg: 'Callable | Mapping | Series', na_action: "Literal['ignore'] | None" = None):
-        return CallCol(lambda DF: self.__call__(DF).map(decide_if_call(arg, DF), na_action))
+    def map(self, arg, na_action = None):
+        return CallCol(lambda DF: self.__call__(DF).map(arg=decide_if_call(arg, DF), na_action=na_action))
 
-    def mask(self, cond, other=lib.no_default):
-        return CallCol(lambda DF: self.__call__(DF).mask(decide_if_call(cond, DF), decide_if_call(other, DF)))
+    def mask(self, cond, other = lib.no_default, inplace = False, axis = None, level = None):
+        return CallCol(lambda DF: self.__call__(DF).mask(cond=decide_if_call(cond, DF), other=decide_if_call(other, DF), inplace=inplace, axis=axis, level=level))
 
-    def max(self, axis: 'AxisInt | None' = 0, skipna: 'bool_t' = True, numeric_only: 'bool_t' = False, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).max(axis, skipna, numeric_only, **kwargs))
+    def max(self, axis = 0, skipna = True, numeric_only = False, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).max(axis=axis, skipna=skipna, numeric_only=numeric_only, kwargs=kwargs))
 
-    def mean(self, axis: 'AxisInt | None' = 0, skipna: 'bool_t' = True, numeric_only: 'bool_t' = False, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).mean(axis, skipna, numeric_only, **kwargs))
+    def mean(self, axis = 0, skipna = True, numeric_only = False, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).mean(axis=axis, skipna=skipna, numeric_only=numeric_only, kwargs=kwargs))
 
-    def median(self, axis: 'AxisInt | None' = 0, skipna: 'bool_t' = True, numeric_only: 'bool_t' = False, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).median(axis, skipna, numeric_only, **kwargs))
+    def median(self, axis = 0, skipna = True, numeric_only = False, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).median(axis=axis, skipna=skipna, numeric_only=numeric_only, kwargs=kwargs))
 
-    def memory_usage(self, index: 'bool' = True, deep: 'bool' = False):
-        return CallCol(lambda DF: self.__call__(DF).memory_usage(index, deep))
+    def memory_usage(self, index = True, deep = False):
+        return CallCol(lambda DF: self.__call__(DF).memory_usage(index=index, deep=deep))
 
-    def min(self, axis: 'AxisInt | None' = 0, skipna: 'bool_t' = True, numeric_only: 'bool_t' = False, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).min(axis, skipna, numeric_only, **kwargs))
+    def min(self, axis = 0, skipna = True, numeric_only = False, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).min(axis=axis, skipna=skipna, numeric_only=numeric_only, kwargs=kwargs))
 
-    def mod(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).mod(decide_if_call(other, DF), level, fill_value, axis))
+    def mod(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).mod(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def mode(self, dropna: 'bool' = True):
-        return CallCol(lambda DF: self.__call__(DF).mode(dropna))
+    def mode(self, dropna = True):
+        return CallCol(lambda DF: self.__call__(DF).mode(dropna=dropna))
 
-    def mul(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).mul(decide_if_call(other, DF), level, fill_value, axis))
+    def mul(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).mul(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def multiply(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).multiply(decide_if_call(other, DF), level, fill_value, axis))
+    def multiply(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).multiply(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def ne(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).ne(decide_if_call(other, DF), level, fill_value, axis))
+    def ne(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).ne(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def nlargest(self, n: 'int' = 5, keep: "Literal['first', 'last', 'all']" = 'first'):
-        return CallCol(lambda DF: self.__call__(DF).nlargest(n, keep))
+    def nlargest(self, n = 5, keep = 'first'):
+        return CallCol(lambda DF: self.__call__(DF).nlargest(n=n, keep=keep))
 
     def notna(self):
         return CallCol(lambda DF: self.__call__(DF).notna())
@@ -1141,248 +1077,248 @@ class BaseCol(object):
     def notnull(self):
         return CallCol(lambda DF: self.__call__(DF).notnull())
 
-    def nsmallest(self, n: 'int' = 5, keep: 'str' = 'first'):
-        return CallCol(lambda DF: self.__call__(DF).nsmallest(n, keep))
+    def nsmallest(self, n = 5, keep = 'first'):
+        return CallCol(lambda DF: self.__call__(DF).nsmallest(n=n, keep=keep))
 
-    def nunique(self, dropna: 'bool' = True):
-        return CallCol(lambda DF: self.__call__(DF).nunique(dropna))
+    def nunique(self, dropna = True):
+        return CallCol(lambda DF: self.__call__(DF).nunique(dropna=dropna))
 
-    def pad(self, axis: 'None | Axis' = None, inplace: 'bool_t' = False, limit: 'None | int' = None, downcast: 'dict | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).pad(axis, inplace, limit, downcast))
+    def pad(self, axis = None, inplace = False, limit = None, downcast = None):
+        return CallCol(lambda DF: self.__call__(DF).pad(axis=axis, inplace=inplace, limit=limit, downcast=downcast))
 
-    def pct_change(self, periods: 'int' = 1, fill_method: "Literal['backfill', 'bfill', 'pad', 'ffill'] | None" = 'pad', limit=None, freq=None, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).pct_change(periods, fill_method, limit, freq, **kwargs))
+    def pct_change(self, periods = 1, fill_method = 'pad', limit = None, freq = None, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).pct_change(periods=periods, fill_method=fill_method, limit=limit, freq=freq, kwargs=kwargs))
 
-    def pipe(self, func: 'Callable[..., T] | tuple[Callable[..., T], str]', *args, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).pipe(func, *args, **kwargs))
+    def pipe(self, func, *args, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).pipe(func=func, args=args, kwargs=kwargs))
 
-    def pop(self, item: 'Hashable'):
-        return CallCol(lambda DF: self.__call__(DF).pop(item))
+    def pop(self, item):
+        return CallCol(lambda DF: self.__call__(DF).pop(item=item))
 
-    def pow(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).pow(decide_if_call(other, DF), level, fill_value, axis))
+    def pow(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).pow(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def prod(self, axis: 'Axis | None' = None, skipna: 'bool_t' = True, numeric_only: 'bool_t' = False, min_count: 'int' = 0, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).prod(axis, skipna, numeric_only, min_count, **kwargs))
+    def prod(self, axis = None, skipna = True, numeric_only = False, min_count = 0, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).prod(axis=axis, skipna=skipna, numeric_only=numeric_only, min_count=min_count, kwargs=kwargs))
 
-    def product(self, axis: 'Axis | None' = None, skipna: 'bool_t' = True, numeric_only: 'bool_t' = False, min_count: 'int' = 0, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).product(axis, skipna, numeric_only, min_count, **kwargs))
+    def product(self, axis = None, skipna = True, numeric_only = False, min_count = 0, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).product(axis=axis, skipna=skipna, numeric_only=numeric_only, min_count=min_count, kwargs=kwargs))
 
-    def quantile(self, q: 'float | Sequence[float] | AnyArrayLike' = 0.5, interpolation: 'QuantileInterpolation' = 'linear'):
-        return CallCol(lambda DF: self.__call__(DF).quantile(q, interpolation))
+    def quantile(self, q = 0.5, interpolation = 'linear'):
+        return CallCol(lambda DF: self.__call__(DF).quantile(q=q, interpolation=interpolation))
 
-    def radd(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).radd(decide_if_call(other, DF), level, fill_value, axis))
+    def radd(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).radd(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def rank(self, axis: 'Axis' = 0, method: 'str' = 'average', numeric_only: 'bool_t' = False, na_option: 'str' = 'keep', ascending: 'bool_t' = True, pct: 'bool_t' = False):
-        return CallCol(lambda DF: self.__call__(DF).rank(axis, method, numeric_only, na_option, ascending, pct))
+    def rank(self, axis = 0, method = 'average', numeric_only = False, na_option = 'keep', ascending = True, pct = False):
+        return CallCol(lambda DF: self.__call__(DF).rank(axis=axis, method=method, numeric_only=numeric_only, na_option=na_option, ascending=ascending, pct=pct))
 
-    def ravel(self, order: 'str' = 'C'):
-        return CallCol(lambda DF: self.__call__(DF).ravel(order))
+    def ravel(self, order = 'C'):
+        return CallCol(lambda DF: self.__call__(DF).ravel(order=order))
 
-    def rdiv(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).rdiv(decide_if_call(other, DF), level, fill_value, axis))
+    def rdiv(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).rdiv(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def rdivmod(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).rdivmod(decide_if_call(other, DF), level, fill_value, axis))
+    def rdivmod(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).rdivmod(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def reindex(self, index=None, axis: 'Axis | None' = None, method: 'str | None' = None, copy: 'bool | None' = None, level: 'Level | None' = None, fill_value: 'Scalar | None' = None, limit: 'int | None' = None, tolerance=None):
-        return CallCol(lambda DF: self.__call__(DF).reindex(index, axis, method, copy, level, fill_value, limit, tolerance))
+    def reindex(self, index = None, axis = None, method = None, copy = None, level = None, fill_value = None, limit = None, tolerance = None):
+        return CallCol(lambda DF: self.__call__(DF).reindex(index=index, axis=axis, method=method, copy=copy, level=level, fill_value=fill_value, limit=limit, tolerance=tolerance))
 
-    def reindex_like(self, other, method: "Literal['backfill', 'bfill', 'pad', 'ffill', 'nearest'] | None" = None, copy: 'bool_t | None' = None, limit=None, tolerance=None):
-        return CallCol(lambda DF: self.__call__(DF).reindex_like(decide_if_call(other, DF), method, copy, limit, tolerance))
+    def reindex_like(self, other, method = None, copy = None, limit = None, tolerance = None):
+        return CallCol(lambda DF: self.__call__(DF).reindex_like(other=decide_if_call(other, DF), method=method, copy=copy, limit=limit, tolerance=tolerance))
 
-    def rename(self, index: 'Renamer | Hashable | None' = None, axis: 'Axis | None' = None, copy: 'bool' = True, inplace: 'bool' = False, level: 'Level | None' = None, errors: 'IgnoreRaise' = 'ignore'):
-        return CallCol(lambda DF: self.__call__(DF).rename(index, axis, copy, inplace, level, errors))
+    def rename(self, index = None, axis = None, copy = True, inplace = False, level = None, errors = 'ignore'):
+        return CallCol(lambda DF: self.__call__(DF).rename(index=index, axis=axis, copy=copy, inplace=inplace, level=level, errors=errors))
 
-    def rename_axis(self, mapper: 'IndexLabel | lib.NoDefault' = lib.no_default, index=lib.no_default, axis: 'Axis' = 0, copy: 'bool' = True, inplace: 'bool' = False):
-        return CallCol(lambda DF: self.__call__(DF).rename_axis(mapper, index, axis, copy, inplace))
+    def rename_axis(self, mapper = lib.no_default, index = lib.no_default, axis = 0, copy = True, inplace = False):
+        return CallCol(lambda DF: self.__call__(DF).rename_axis(mapper=mapper, index=index, axis=axis, copy=copy, inplace=inplace))
 
-    def reorder_levels(self, order: 'Sequence[Level]'):
-        return CallCol(lambda DF: self.__call__(DF).reorder_levels(order))
+    def reorder_levels(self, order):
+        return CallCol(lambda DF: self.__call__(DF).reorder_levels(order=order))
 
-    def repeat(self, repeats: 'int | Sequence[int]', axis: 'None' = None):
-        return CallCol(lambda DF: self.__call__(DF).repeat(repeats, axis))
+    def repeat(self, repeats, axis = None):
+        return CallCol(lambda DF: self.__call__(DF).repeat(repeats=repeats, axis=axis))
 
-    def replace(self, to_replace=None, value=lib.no_default, inplace: 'bool' = False, limit: 'int | None' = None, regex: 'bool' = False, method: "Literal['pad', 'ffill', 'bfill'] | lib.NoDefault" = lib.no_default):
-        return CallCol(lambda DF: self.__call__(DF).replace(to_replace, value, inplace, limit, regex, method))
+    def replace(self, to_replace = None, value = lib.no_default, inplace = False, limit = None, regex = False, method = lib.no_default):
+        return CallCol(lambda DF: self.__call__(DF).replace(to_replace=to_replace, value=value, inplace=inplace, limit=limit, regex=regex, method=method))
 
-    def resample(self, rule, axis: 'Axis' = 0, closed: 'str | None' = None, label: 'str | None' = None, convention: 'str' = 'start', kind: 'str | None' = None, on: 'Level' = None, level: 'Level' = None, origin: 'str | TimestampConvertibleTypes' = 'start_day', offset: 'TimedeltaConvertibleTypes | None' = None, group_keys: 'bool' = False):
-        return CallCol(lambda DF: self.__call__(DF).resample(rule, axis, closed, label, convention, kind, on, level, origin, offset, group_keys))
+    def resample(self, rule, axis = 0, closed = None, label = None, convention = 'start', kind = None, on = None, level = None, origin = 'start_day', offset = None, group_keys = False):
+        return CallCol(lambda DF: self.__call__(DF).resample(rule=rule, axis=axis, closed=closed, label=label, convention=convention, kind=kind, on=on, level=level, origin=origin, offset=offset, group_keys=group_keys))
 
-    def reset_index(self, level: 'IndexLabel' = None, drop: 'bool' = False, name: 'Level' = lib.no_default, inplace: 'bool' = False, allow_duplicates: 'bool' = False):
-        return CallCol(lambda DF: self.__call__(DF).reset_index(level, drop, name, inplace, allow_duplicates))
+    def reset_index(self, level = None, drop = False, name = lib.no_default, inplace = False, allow_duplicates = False):
+        return CallCol(lambda DF: self.__call__(DF).reset_index(level=level, drop=drop, name=name, inplace=inplace, allow_duplicates=allow_duplicates))
 
-    def rfloordiv(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).rfloordiv(decide_if_call(other, DF), level, fill_value, axis))
+    def rfloordiv(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).rfloordiv(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def rmod(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).rmod(decide_if_call(other, DF), level, fill_value, axis))
+    def rmod(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).rmod(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def rmul(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).rmul(decide_if_call(other, DF), level, fill_value, axis))
+    def rmul(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).rmul(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def rolling(self, window: 'int | dt.timedelta | str | BaseOffset | BaseIndexer', min_periods: 'int | None' = None, center: 'bool_t' = False, win_type: 'str | None' = None, on: 'str | None' = None, axis: 'Axis' = 0, closed: 'str | None' = None, step: 'int | None' = None, method: 'str' = 'single'):
-        return CallCol(lambda DF: self.__call__(DF).rolling(window, min_periods, center, win_type, on, axis, closed, step, method))
+    def rolling(self, window, min_periods = None, center = False, win_type = None, on = None, axis = 0, closed = None, step = None, method = 'single'):
+        return CallCol(lambda DF: self.__call__(DF).rolling(window=window, min_periods=min_periods, center=center, win_type=win_type, on=on, axis=axis, closed=closed, step=step, method=method))
 
-    def round(self, decimals: 'int' = 0, *args, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).round(decimals, *args, **kwargs))
+    def round(self, decimals = 0, *args, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).round(decimals=decimals, args=args, kwargs=kwargs))
 
-    def rpow(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).rpow(decide_if_call(other, DF), level, fill_value, axis))
+    def rpow(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).rpow(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def rsub(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).rsub(decide_if_call(other, DF), level, fill_value, axis))
+    def rsub(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).rsub(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def rtruediv(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).rtruediv(decide_if_call(other, DF), level, fill_value, axis))
+    def rtruediv(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).rtruediv(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def sample(self, n: 'int | None' = None, frac: 'float | None' = None, replace: 'bool_t' = False, weights=None, random_state: 'RandomState | None' = None, axis: 'Axis | None' = None, ignore_index: 'bool_t' = False):
-        return CallCol(lambda DF: self.__call__(DF).sample(n, frac, replace, weights, random_state, axis, ignore_index))
+    def sample(self, n = None, frac = None, replace = False, weights = None, random_state = None, axis = None, ignore_index = False):
+        return CallCol(lambda DF: self.__call__(DF).sample(n=n, frac=frac, replace=replace, weights=weights, random_state=random_state, axis=axis, ignore_index=ignore_index))
 
-    def searchsorted(self, value: 'NumpyValueArrayLike | ExtensionArray', side: "Literal['left', 'right']" = 'left', sorter: 'NumpySorter' = None):
-        return CallCol(lambda DF: self.__call__(DF).searchsorted(value, side, sorter))
+    def searchsorted(self, value, side = 'left', sorter = None):
+        return CallCol(lambda DF: self.__call__(DF).searchsorted(value=value, side=side, sorter=sorter))
 
-    def sem(self, axis: 'Axis | None' = None, skipna: 'bool_t' = True, ddof: 'int' = 1, numeric_only: 'bool_t' = False, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).sem(axis, skipna, ddof, numeric_only, **kwargs))
+    def sem(self, axis = None, skipna = True, ddof = 1, numeric_only = False, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).sem(axis=axis, skipna=skipna, ddof=ddof, numeric_only=numeric_only, kwargs=kwargs))
 
-    def set_axis(self, labels, axis: 'Axis' = 0, copy: 'bool | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).set_axis(labels, axis, copy))
+    def set_axis(self, labels, axis = 0, copy = None):
+        return CallCol(lambda DF: self.__call__(DF).set_axis(labels=labels, axis=axis, copy=copy))
 
-    def set_flags(self, copy: 'bool_t' = False, allows_duplicate_labels: 'bool_t | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).set_flags(copy, allows_duplicate_labels))
+    def set_flags(self, copy = False, allows_duplicate_labels = None):
+        return CallCol(lambda DF: self.__call__(DF).set_flags(copy=copy, allows_duplicate_labels=allows_duplicate_labels))
 
-    def shift(self, periods: 'int' = 1, freq=None, axis: 'Axis' = 0, fill_value: 'Hashable' = None):
-        return CallCol(lambda DF: self.__call__(DF).shift(periods, freq, axis, fill_value))
+    def shift(self, periods = 1, freq = None, axis = 0, fill_value = None):
+        return CallCol(lambda DF: self.__call__(DF).shift(periods=periods, freq=freq, axis=axis, fill_value=fill_value))
 
-    def skew(self, axis: 'AxisInt | None' = 0, skipna: 'bool_t' = True, numeric_only: 'bool_t' = False, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).skew(axis, skipna, numeric_only, **kwargs))
+    def skew(self, axis = 0, skipna = True, numeric_only = False, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).skew(axis=axis, skipna=skipna, numeric_only=numeric_only, kwargs=kwargs))
 
-    def sort_index(self, axis: 'Axis' = 0, level: 'IndexLabel' = None, ascending: 'bool | Sequence[bool]' = True, inplace: 'bool' = False, kind: 'SortKind' = 'quicksort', na_position: 'NaPosition' = 'last', sort_remaining: 'bool' = True, ignore_index: 'bool' = False, key: 'IndexKeyFunc' = None):
-        return CallCol(lambda DF: self.__call__(DF).sort_index(axis, level, ascending, inplace, kind, na_position, sort_remaining, ignore_index, key))
+    def sort_index(self, axis = 0, level = None, ascending = True, inplace = False, kind = 'quicksort', na_position = 'last', sort_remaining = True, ignore_index = False, key = None):
+        return CallCol(lambda DF: self.__call__(DF).sort_index(axis=axis, level=level, ascending=ascending, inplace=inplace, kind=kind, na_position=na_position, sort_remaining=sort_remaining, ignore_index=ignore_index, key=key))
 
-    def sort_values(self, axis: 'Axis' = 0, ascending: 'bool | int | Sequence[bool] | Sequence[int]' = True, inplace: 'bool' = False, kind: 'str' = 'quicksort', na_position: 'str' = 'last', ignore_index: 'bool' = False, key: 'ValueKeyFunc' = None):
-        return CallCol(lambda DF: self.__call__(DF).sort_values(axis, ascending, inplace, kind, na_position, ignore_index, key))
+    def sort_values(self, axis = 0, ascending = True, inplace = False, kind = 'quicksort', na_position = 'last', ignore_index = False, key = None):
+        return CallCol(lambda DF: self.__call__(DF).sort_values(axis=axis, ascending=ascending, inplace=inplace, kind=kind, na_position=na_position, ignore_index=ignore_index, key=key))
 
-    def squeeze(self, axis: 'Axis | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).squeeze(axis))
+    def squeeze(self, axis = None):
+        return CallCol(lambda DF: self.__call__(DF).squeeze(axis=axis))
 
-    def std(self, axis: 'Axis | None' = None, skipna: 'bool_t' = True, ddof: 'int' = 1, numeric_only: 'bool_t' = False, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).std(axis, skipna, ddof, numeric_only, **kwargs))
+    def std(self, axis = None, skipna = True, ddof = 1, numeric_only = False, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).std(axis=axis, skipna=skipna, ddof=ddof, numeric_only=numeric_only, kwargs=kwargs))
 
-    def sub(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).sub(decide_if_call(other, DF), level, fill_value, axis))
+    def sub(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).sub(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def subtract(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).subtract(decide_if_call(other, DF), level, fill_value, axis))
+    def subtract(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).subtract(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def sum(self, axis: 'Axis | None' = None, skipna: 'bool_t' = True, numeric_only: 'bool_t' = False, min_count: 'int' = 0, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).sum(axis, skipna, numeric_only, min_count, **kwargs))
+    def sum(self, axis = None, skipna = True, numeric_only = False, min_count = 0, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).sum(axis=axis, skipna=skipna, numeric_only=numeric_only, min_count=min_count, kwargs=kwargs))
 
-    def swapaxes(self, axis1: 'Axis', axis2: 'Axis', copy: 'bool_t | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).swapaxes(axis1, axis2, copy))
+    def swapaxes(self, axis1, axis2, copy = None):
+        return CallCol(lambda DF: self.__call__(DF).swapaxes(axis1=axis1, axis2=axis2, copy=copy))
 
-    def swaplevel(self, i: 'Level' = -2, j: 'Level' = -1, copy: 'bool | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).swaplevel(i, j, copy))
+    def swaplevel(self, i = -2, j = -1, copy = None):
+        return CallCol(lambda DF: self.__call__(DF).swaplevel(i=i, j=j, copy=copy))
 
-    def tail(self, n: 'int' = 5):
-        return CallCol(lambda DF: self.__call__(DF).tail(n))
+    def tail(self, n = 5):
+        return CallCol(lambda DF: self.__call__(DF).tail(n=n))
 
-    def take(self, indices, axis: 'Axis' = 0, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).take(indices, axis, **kwargs))
+    def take(self, indices, axis = 0, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).take(indices=indices, axis=axis, kwargs=kwargs))
 
-    def to_clipboard(self, excel: 'bool_t' = True, sep: 'str | None' = None, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).to_clipboard(excel, sep, **kwargs))
+    def to_clipboard(self, excel = True, sep = None, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).to_clipboard(excel=excel, sep=sep, kwargs=kwargs))
 
-    def to_csv(self, path_or_buf: 'FilePath | WriteBuffer[bytes] | WriteBuffer[str] | None' = None, sep: 'str' = ',', na_rep: 'str' = '', float_format: 'str | Callable | None' = None, columns: 'Sequence[Hashable] | None' = None, header: 'bool_t | list[str]' = True, index: 'bool_t' = True, index_label: 'IndexLabel | None' = None, mode: 'str' = 'w', encoding: 'str | None' = None, compression: 'CompressionOptions' = 'infer', quoting: 'int | None' = None, quotechar: 'str' = '"', lineterminator: 'str | None' = None, chunksize: 'int | None' = None, date_format: 'str | None' = None, doublequote: 'bool_t' = True, escapechar: 'str | None' = None, decimal: 'str' = '.', errors: 'str' = 'strict', storage_options: 'StorageOptions' = None):
-        return CallCol(lambda DF: self.__call__(DF).to_csv(path_or_buf, sep, na_rep, float_format, columns, header, index, index_label, mode, encoding, compression, quoting, quotechar, lineterminator, chunksize, date_format, doublequote, escapechar, decimal, errors, storage_options))
+    def to_csv(self, path_or_buf = None, sep = ',', na_rep = '', float_format = None, columns = None, header = True, index = True, index_label = None, mode = 'w', encoding = None, compression = 'infer', quoting = None, quotechar = '"', lineterminator = None, chunksize = None, date_format = None, doublequote = True, escapechar = None, decimal = '.', errors = 'strict', storage_options = None):
+        return CallCol(lambda DF: self.__call__(DF).to_csv(path_or_buf=path_or_buf, sep=sep, na_rep=na_rep, float_format=float_format, columns=columns, header=header, index=index, index_label=index_label, mode=mode, encoding=encoding, compression=compression, quoting=quoting, quotechar=quotechar, lineterminator=lineterminator, chunksize=chunksize, date_format=date_format, doublequote=doublequote, escapechar=escapechar, decimal=decimal, errors=errors, storage_options=storage_options))
 
-    def to_dict(self, into: 'type[dict]' = dict):
-        return CallCol(lambda DF: self.__call__(DF).to_dict(into))
+    def to_dict(self, into = dict):
+        return CallCol(lambda DF: self.__call__(DF).to_dict(into=into))
 
-    def to_excel(self, excel_writer, sheet_name: 'str' = 'Sheet1', na_rep: 'str' = '', float_format: 'str | None' = None, columns: 'Sequence[Hashable] | None' = None, header: 'Sequence[Hashable] | bool_t' = True, index: 'bool_t' = True, index_label: 'IndexLabel' = None, startrow: 'int' = 0, startcol: 'int' = 0, engine: 'str | None' = None, merge_cells: 'bool_t' = True, inf_rep: 'str' = 'inf', freeze_panes: 'tuple[int, int] | None' = None, storage_options: 'StorageOptions' = None):
-        return CallCol(lambda DF: self.__call__(DF).to_excel(excel_writer, sheet_name, na_rep, float_format, columns, header, index, index_label, startrow, startcol, engine, merge_cells, inf_rep, freeze_panes, storage_options))
+    def to_excel(self, excel_writer, sheet_name = 'Sheet1', na_rep = '', float_format = None, columns = None, header = True, index = True, index_label = None, startrow = 0, startcol = 0, engine = None, merge_cells = True, inf_rep = 'inf', freeze_panes = None, storage_options = None):
+        return CallCol(lambda DF: self.__call__(DF).to_excel(excel_writer=excel_writer, sheet_name=sheet_name, na_rep=na_rep, float_format=float_format, columns=columns, header=header, index=index, index_label=index_label, startrow=startrow, startcol=startcol, engine=engine, merge_cells=merge_cells, inf_rep=inf_rep, freeze_panes=freeze_panes, storage_options=storage_options))
 
-    def to_frame(self, name: 'Hashable' = lib.no_default):
-        return CallCol(lambda DF: self.__call__(DF).to_frame(name))
+    def to_frame(self, name = lib.no_default):
+        return CallCol(lambda DF: self.__call__(DF).to_frame(name=name))
 
-    def to_hdf(self, path_or_buf: 'FilePath | HDFStore', key: 'str', mode: 'str' = 'a', complevel: 'int | None' = None, complib: 'str | None' = None, append: 'bool_t' = False, format: 'str | None' = None, index: 'bool_t' = True, min_itemsize: 'int | dict[str, int] | None' = None, nan_rep=None, dropna: 'bool_t | None' = None, data_columns: 'Literal[True] | list[str] | None' = None, errors: 'str' = 'strict', encoding: 'str' = 'UTF-8'):
-        return CallCol(lambda DF: self.__call__(DF).to_hdf(path_or_buf, key, mode, complevel, complib, append, format, index, min_itemsize, nan_rep, dropna, data_columns, errors, encoding))
+    def to_hdf(self, path_or_buf, key, mode = 'a', complevel = None, complib = None, append = False, format = None, index = True, min_itemsize = None, nan_rep = None, dropna = None, data_columns = None, errors = 'strict', encoding = 'UTF-8'):
+        return CallCol(lambda DF: self.__call__(DF).to_hdf(path_or_buf=path_or_buf, key=key, mode=mode, complevel=complevel, complib=complib, append=append, format=format, index=index, min_itemsize=min_itemsize, nan_rep=nan_rep, dropna=dropna, data_columns=data_columns, errors=errors, encoding=encoding))
 
-    def to_json(self, path_or_buf: 'FilePath | WriteBuffer[bytes] | WriteBuffer[str] | None' = None, orient: 'str | None' = None, date_format: 'str | None' = None, double_precision: 'int' = 10, force_ascii: 'bool_t' = True, date_unit: 'str' = 'ms', default_handler: 'Callable[[Any], JSONSerializable] | None' = None, lines: 'bool_t' = False, compression: 'CompressionOptions' = 'infer', index: 'bool_t' = True, indent: 'int | None' = None, storage_options: 'StorageOptions' = None, mode: "Literal['a', 'w']" = 'w'):
-        return CallCol(lambda DF: self.__call__(DF).to_json(path_or_buf, orient, date_format, double_precision, force_ascii, date_unit, default_handler, lines, compression, index, indent, storage_options, mode))
+    def to_json(self, path_or_buf = None, orient = None, date_format = None, double_precision = 10, force_ascii = True, date_unit = 'ms', default_handler = None, lines = False, compression = 'infer', index = True, indent = None, storage_options = None, mode = 'w'):
+        return CallCol(lambda DF: self.__call__(DF).to_json(path_or_buf=path_or_buf, orient=orient, date_format=date_format, double_precision=double_precision, force_ascii=force_ascii, date_unit=date_unit, default_handler=default_handler, lines=lines, compression=compression, index=index, indent=indent, storage_options=storage_options, mode=mode))
 
-    def to_latex(self, buf: 'FilePath | WriteBuffer[str] | None' = None, columns: 'Sequence[Hashable] | None' = None, header: 'bool_t | Sequence[str]' = True, index: 'bool_t' = True, na_rep: 'str' = 'NaN', formatters: 'FormattersType | None' = None, float_format: 'FloatFormatType | None' = None, sparsify: 'bool_t | None' = None, index_names: 'bool_t' = True, bold_rows: 'bool_t' = False, column_format: 'str | None' = None, longtable: 'bool_t | None' = None, escape: 'bool_t | None' = None, encoding: 'str | None' = None, decimal: 'str' = '.', multicolumn: 'bool_t | None' = None, multicolumn_format: 'str | None' = None, multirow: 'bool_t | None' = None, caption: 'str | tuple[str, str] | None' = None, label: 'str | None' = None, position: 'str | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).to_latex(buf, columns, header, index, na_rep, formatters, float_format, sparsify, index_names, bold_rows, column_format, longtable, escape, encoding, decimal, multicolumn, multicolumn_format, multirow, caption, label, position))
+    def to_latex(self, buf = None, columns = None, header = True, index = True, na_rep = 'NaN', formatters = None, float_format = None, sparsify = None, index_names = True, bold_rows = False, column_format = None, longtable = None, escape = None, encoding = None, decimal = '.', multicolumn = None, multicolumn_format = None, multirow = None, caption = None, label = None, position = None):
+        return CallCol(lambda DF: self.__call__(DF).to_latex(buf=buf, columns=columns, header=header, index=index, na_rep=na_rep, formatters=formatters, float_format=float_format, sparsify=sparsify, index_names=index_names, bold_rows=bold_rows, column_format=column_format, longtable=longtable, escape=escape, encoding=encoding, decimal=decimal, multicolumn=multicolumn, multicolumn_format=multicolumn_format, multirow=multirow, caption=caption, label=label, position=position))
 
     def to_list(self):
         return CallCol(lambda DF: self.__call__(DF).to_list())
 
-    def to_markdown(self, buf: 'IO[str] | None' = None, mode: 'str' = 'wt', index: 'bool' = True, storage_options: 'StorageOptions' = None, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).to_markdown(buf, mode, index, storage_options, **kwargs))
+    def to_markdown(self, buf = None, mode = 'wt', index = True, storage_options = None, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).to_markdown(buf=buf, mode=mode, index=index, storage_options=storage_options, kwargs=kwargs))
 
-    def to_numpy(self, dtype: 'npt.DTypeLike | None' = None, copy: 'bool' = False, na_value: 'object' = lib.no_default, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).to_numpy(dtype, copy, na_value, **kwargs))
+    def to_numpy(self, dtype = None, copy = False, na_value = lib.no_default, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).to_numpy(dtype=dtype, copy=copy, na_value=na_value, kwargs=kwargs))
 
-    def to_period(self, freq: 'str | None' = None, copy: 'bool | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).to_period(freq, copy))
+    def to_period(self, freq = None, copy = None):
+        return CallCol(lambda DF: self.__call__(DF).to_period(freq=freq, copy=copy))
 
-    def to_pickle(self, path: 'FilePath | WriteBuffer[bytes]', compression: 'CompressionOptions' = 'infer', protocol: 'int' = 5, storage_options: 'StorageOptions' = None):
-        return CallCol(lambda DF: self.__call__(DF).to_pickle(path, compression, protocol, storage_options))
+    def to_pickle(self, path, compression = 'infer', protocol = 5, storage_options = None):
+        return CallCol(lambda DF: self.__call__(DF).to_pickle(path=path, compression=compression, protocol=protocol, storage_options=storage_options))
 
-    def to_sql(self, name: 'str', con, schema: 'str | None' = None, if_exists: "Literal['fail', 'replace', 'append']" = 'fail', index: 'bool_t' = True, index_label: 'IndexLabel' = None, chunksize: 'int | None' = None, dtype: 'DtypeArg | None' = None, method: 'str | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).to_sql(name, con, schema, if_exists, index, index_label, chunksize, dtype, method))
+    def to_sql(self, name, con, schema = None, if_exists = 'fail', index = True, index_label = None, chunksize = None, dtype = None, method = None):
+        return CallCol(lambda DF: self.__call__(DF).to_sql(name=name, con=con, schema=schema, if_exists=if_exists, index=index, index_label=index_label, chunksize=chunksize, dtype=dtype, method=method))
 
-    def to_string(self, buf: 'FilePath | WriteBuffer[str] | None' = None, na_rep: 'str' = 'NaN', float_format: 'str | None' = None, header: 'bool' = True, index: 'bool' = True, length: 'bool' = False, dtype: 'bool' = False, name: 'bool' = False, max_rows: 'int | None' = None, min_rows: 'int | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).to_string(buf, na_rep, float_format, header, index, length, dtype, name, max_rows, min_rows))
+    def to_string(self, buf = None, na_rep = 'NaN', float_format = None, header = True, index = True, length = False, dtype = False, name = False, max_rows = None, min_rows = None):
+        return CallCol(lambda DF: self.__call__(DF).to_string(buf=buf, na_rep=na_rep, float_format=float_format, header=header, index=index, length=length, dtype=dtype, name=name, max_rows=max_rows, min_rows=min_rows))
 
-    def to_timestamp(self, freq=None, how: "Literal['s', 'e', 'start', 'end']" = 'start', copy: 'bool | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).to_timestamp(freq, how, copy))
+    def to_timestamp(self, freq = None, how = 'start', copy = None):
+        return CallCol(lambda DF: self.__call__(DF).to_timestamp(freq=freq, how=how, copy=copy))
 
     def to_xarray(self):
         return CallCol(lambda DF: self.__call__(DF).to_xarray())
 
-    def transform(self, func: 'AggFuncType', axis: 'Axis' = 0, *args, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).transform(func, axis, *args, **kwargs))
+    def transform(self, func, axis = 0, *args, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).transform(func=func, axis=axis, args=args, kwargs=kwargs))
 
     def transpose(self, *args, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).transpose(*args, **kwargs))
+        return CallCol(lambda DF: self.__call__(DF).transpose(args=args, kwargs=kwargs))
 
-    def truediv(self, other, level=None, fill_value=None, axis: 'Axis' = 0):
-        return CallCol(lambda DF: self.__call__(DF).truediv(decide_if_call(other, DF), level, fill_value, axis))
+    def truediv(self, other, level = None, fill_value = None, axis = 0):
+        return CallCol(lambda DF: self.__call__(DF).truediv(other=decide_if_call(other, DF), level=level, fill_value=fill_value, axis=axis))
 
-    def truncate(self, before=None, after=None, axis: 'Axis | None' = None, copy: 'bool_t | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).truncate(before, after, axis, copy))
+    def truncate(self, before = None, after = None, axis = None, copy = None):
+        return CallCol(lambda DF: self.__call__(DF).truncate(before=before, after=after, axis=axis, copy=copy))
 
-    def tz_convert(self, tz, axis: 'Axis' = 0, level=None, copy: 'bool_t | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).tz_convert(tz, axis, level, copy))
+    def tz_convert(self, tz, axis = 0, level = None, copy = None):
+        return CallCol(lambda DF: self.__call__(DF).tz_convert(tz=tz, axis=axis, level=level, copy=copy))
 
-    def tz_localize(self, tz, axis: 'Axis' = 0, level=None, copy: 'bool_t | None' = None, ambiguous: 'TimeAmbiguous' = 'raise', nonexistent: 'TimeNonexistent' = 'raise'):
-        return CallCol(lambda DF: self.__call__(DF).tz_localize(tz, axis, level, copy, ambiguous, nonexistent))
+    def tz_localize(self, tz, axis = 0, level = None, copy = None, ambiguous = 'raise', nonexistent = 'raise'):
+        return CallCol(lambda DF: self.__call__(DF).tz_localize(tz=tz, axis=axis, level=level, copy=copy, ambiguous=ambiguous, nonexistent=nonexistent))
 
     def unique(self):
         return CallCol(lambda DF: self.__call__(DF).unique())
 
-    def unstack(self, level: 'IndexLabel' = -1, fill_value: 'Hashable' = None):
-        return CallCol(lambda DF: self.__call__(DF).unstack(level, fill_value))
+    def unstack(self, level = -1, fill_value = None):
+        return CallCol(lambda DF: self.__call__(DF).unstack(level=level, fill_value=fill_value))
 
-    def update(self, other: 'Series | Sequence | Mapping'):
-        return CallCol(lambda DF: self.__call__(DF).update(decide_if_call(other, DF)))
+    def update(self, other):
+        return CallCol(lambda DF: self.__call__(DF).update(other=decide_if_call(other, DF)))
 
-    def value_counts(self, normalize: 'bool' = False, sort: 'bool' = True, ascending: 'bool' = False, bins=None, dropna: 'bool' = True):
-        return CallCol(lambda DF: self.__call__(DF).value_counts(normalize, sort, ascending, bins, dropna))
+    def value_counts(self, normalize = False, sort = True, ascending = False, bins = None, dropna = True):
+        return CallCol(lambda DF: self.__call__(DF).value_counts(normalize=normalize, sort=sort, ascending=ascending, bins=bins, dropna=dropna))
 
-    def var(self, axis: 'Axis | None' = None, skipna: 'bool_t' = True, ddof: 'int' = 1, numeric_only: 'bool_t' = False, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).var(axis, skipna, ddof, numeric_only, **kwargs))
+    def var(self, axis = None, skipna = True, ddof = 1, numeric_only = False, **kwargs):
+        return CallCol(lambda DF: self.__call__(DF).var(axis=axis, skipna=skipna, ddof=ddof, numeric_only=numeric_only, kwargs=kwargs))
 
-    def view(self, dtype: 'Dtype | None' = None):
-        return CallCol(lambda DF: self.__call__(DF).view(dtype))
+    def view(self, dtype = None):
+        return CallCol(lambda DF: self.__call__(DF).view(dtype=dtype))
 
-    def where(self, cond, other=lib.no_default):
-        return CallCol(lambda DF: self.__call__(DF).where(decide_if_call(cond, DF), decide_if_call(other, DF)))
+    def where(self, cond, other = lib.no_default, inplace = False, axis = None, level = None):
+        return CallCol(lambda DF: self.__call__(DF).where(cond=decide_if_call(cond, DF), other=decide_if_call(other, DF), inplace=inplace, axis=axis, level=level))
 
-    def xs(self, key: 'IndexLabel', axis: 'Axis' = 0, level: 'IndexLabel' = None, drop_level: 'bool_t' = True):
-        return CallCol(lambda DF: self.__call__(DF).xs(key, axis, level, drop_level))
+    def xs(self, key, axis = 0, level = None, drop_level = True):
+        return CallCol(lambda DF: self.__call__(DF).xs(key=key, axis=axis, level=level, drop_level=drop_level))
 
 @dataclass
 class Col(BaseCol):
