@@ -67,7 +67,7 @@ def make_called_method(method, param_call_list, params_fn_def, params_positional
     output = make_simple_method(method, params_fn_def, params_positional_args, func, accessor)
 
     for param in param_call_list:
-        output[1] = re.sub(f"\\b={param}\\b", f"=decide_if_call({param}, DF)", output[1])
+        output[1] = re.sub(f"\\b={param}\\b", f"=_decide_if_call({param}, DF)", output[1])
 
     return output
 
@@ -83,12 +83,12 @@ def make_simple_method(method, params_fn_def, params_positional_args, func="__ca
 
 def write_indexer_class(indexer_name):
     return [
-        f"class {indexer_name.capitalize()}Indexer:",
+        f"class _{indexer_name.capitalize()}Indexer:",
         f"    def __init__(self, func):",
         f"        self.func = func",
 
         f"    def __getitem__(self, *indexes):",
-        f"        return CallCol(lambda DF: self.func(DF).{indexer_name}.__getitem__(*indexes))",
+        f"        return CallCol(lambda DF: self.func(DF)._{indexer_name}.__getitem__(*indexes))",
         f"",
     ]
 
@@ -97,7 +97,7 @@ def write_indexer(indexer_name):
     return [
         f"    @property",
         f"    def {indexer_name}(self):",
-        f"        return {indexer_name.capitalize()}Indexer(self.__call__)",
+        f"        return _{indexer_name.capitalize()}Indexer(self.__call__)",
         f"",
     ]
 
@@ -133,7 +133,7 @@ def make_accessor_property_code(accessor):
     return [
         f"    @property",
         f"    def {accessor}(self):",
-        f"        return {accessor.capitalize()}Accessor(self.__call__)",
+        f"        return _{accessor.capitalize()}Accessor(self.__call__)",
         f"",
     ]
 
@@ -218,47 +218,27 @@ def get_methods_and_properties(obj, extra_attrs = []):
     
     return methods, properties
 
-def write_str_accessor_class_code(series_dict, accessor_name):
-    obj = getattr(series_dict[accessor_name], accessor_name)
-    methods, properties = get_methods_and_properties(obj)    
-
-    output_code = [
-        f"@dataclass",
-        f"class {accessor_name.capitalize()}Accessor(object):",
-        f"    _fn: Callable",
-        f"",        
-    ]
-
-    output_code += write_property_code(properties, "_fn", "str")
-
-    for method in methods:
-        code_helpers = make_code_helpers(obj, method)
-
-        if method == "cat":
-            code = make_called_method(method, ["others"], *code_helpers, func="_fn", accessor="str")
-        else:
-            code = make_simple_method(method, *code_helpers, func="_fn", accessor="str")
-
-        output_code += code
-    
-    return output_code
-
 def write_accessor_class_code(series_dict, accessor_name, extra_attrs = []):
     obj = getattr(series_dict[accessor_name], accessor_name)
     methods, properties = get_methods_and_properties(obj, extra_attrs)
 
     output_code = [
         f"@dataclass",
-        f"class {accessor_name.capitalize()}Accessor(object):",
+        f"class _{accessor_name.capitalize()}Accessor(object):",
         f"    _fn: Callable",
         f"",
     ]
 
     output_code += write_property_code(properties, "_fn", accessor_name)
+    
     for method in methods:
+        code_helpers = make_code_helpers(obj, method)        
         if accessor_name == "plot" and method in ("hexbin", "scatter"):
             continue
-        output_code += make_simple_method(method, *make_code_helpers(obj, method), func="_fn", accessor=accessor_name)
+        if accessor_name == "str" and method == "cat":
+            output_code += make_called_method(method, ["others"], *code_helpers, func="_fn", accessor=accessor_name)
+        else:
+            output_code += make_simple_method(method, *code_helpers, func="_fn", accessor=accessor_name)
     return output_code
 
 def check_series_dunder_attrs(operator_dunder_attrs, series):
@@ -409,14 +389,14 @@ output = [
     "from pandas._libs import lib",
     "",
     "# %% Classes and functions",
-    "def is_col_test(obj):",
+    "def _is_col_test(obj):",
     "    return hasattr(obj, \"_is_col\")",
     "",
-    "def decide_if_call(obj, DF):",
-    "    return obj(DF) if is_col_test(obj) else obj",
+    "def _decide_if_call(obj, DF):",
+    "    return obj(DF) if _is_col_test(obj) else obj",
     "",
     *write_indexer_class_code(attr_groups["indexers"]),
-    *write_str_accessor_class_code(series_dict, "str"),
+    *write_accessor_class_code(series_dict, "str"),
     *write_accessor_class_code(series_dict, "cat"),
     *write_accessor_class_code(series_dict, "dt"),
     *write_accessor_class_code(series_dict, "sparse"),
