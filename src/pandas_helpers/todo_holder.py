@@ -1,9 +1,4 @@
 # %%
-# TODO remove
-# - plot.hexbin
-# - plot.scatter
-# - swapaxes
-
 # TODO Make all methods/properties work as they should
 # - sparse: check from_coo (param A)
 # - Make all arguments keyword arguments
@@ -163,13 +158,15 @@ def find_attr_groups(attr_list, series, accessors = ["cat", "dt", "str", "sparse
     for attr_string in attr_list:
         if attr_string in attr_groups["accessors"]:
             continue
-
+        
         attr = getattr(series, attr_string)
         type_string = str(type(attr)).lower()
-
+        
         if "indexing" in type_string:
             attr_groups["indexers"].append(attr_string)
         elif "method" in type_string:
+            if attr_string == "swapaxes":
+                continue
             attr_groups["methods"].append(attr_string)
         elif callable(attr):
             raise Exception(f"The attr {attr_string} is not a method or an indexer")
@@ -260,6 +257,8 @@ def write_accessor_class_code(series_dict, accessor_name, extra_attrs = []):
 
     output_code += write_property_code(properties, "_fn", accessor_name)
     for method in methods:
+        if accessor_name == "plot" and method in ("hexbin", "scatter"):
+            continue
         output_code += make_simple_method(method, *make_code_helpers(obj, method), func="_fn", accessor=accessor_name)
     return output_code
 

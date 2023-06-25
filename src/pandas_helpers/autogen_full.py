@@ -457,9 +457,6 @@ class PlotAccessor(object):
     def density(self, bw_method = None, ind = None, **kwargs):
         return CallCol(lambda DF: self._fn(DF).plot.density(bw_method=bw_method, ind=ind, kwargs=kwargs))
 
-    def hexbin(self, x, y, C = None, reduce_C_function = None, gridsize = None, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).plot.hexbin(x=x, y=y, C=C, reduce_C_function=reduce_C_function, gridsize=gridsize, kwargs=kwargs))
-
     def hist(self, by = None, bins = 10, **kwargs):
         return CallCol(lambda DF: self._fn(DF).plot.hist(by=by, bins=bins, kwargs=kwargs))
 
@@ -471,9 +468,6 @@ class PlotAccessor(object):
 
     def pie(self, **kwargs):
         return CallCol(lambda DF: self._fn(DF).plot.pie(kwargs=kwargs))
-
-    def scatter(self, x, y, s = None, c = None, **kwargs):
-        return CallCol(lambda DF: self._fn(DF).plot.scatter(x=x, y=y, s=s, c=c, kwargs=kwargs))
 
     def __call__(self, *args, **kwargs):
         return CallCol(lambda DF: self._fn(DF).plot.__call__(args=args, kwargs=kwargs))
@@ -1214,9 +1208,6 @@ class BaseCol(object):
 
     def sum(self, axis = None, skipna = True, numeric_only = False, min_count = 0, **kwargs):
         return CallCol(lambda DF: self.__call__(DF).sum(axis=axis, skipna=skipna, numeric_only=numeric_only, min_count=min_count, kwargs=kwargs))
-
-    def swapaxes(self, axis1, axis2, copy = None):
-        return CallCol(lambda DF: self.__call__(DF).swapaxes(axis1=axis1, axis2=axis2, copy=copy))
 
     def swaplevel(self, i = -2, j = -1, copy = None):
         return CallCol(lambda DF: self.__call__(DF).swaplevel(i=i, j=j, copy=copy))
