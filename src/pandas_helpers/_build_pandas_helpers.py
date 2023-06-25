@@ -1,14 +1,13 @@
+"""Build pandas_helpers.py"""
+
+
 # %%
 # TODO Make all methods/properties work as they should
 # - sparse: check from_coo (param A)
-# - Make all arguments keyword arguments
-# - Remove existing patches
-# - Remove type hints
 # - Test every method and property (ie make unit tests). Could ask for help on this?
 
 # TODO housekeeping
 # - Rename this script _<bla>.py, add description at top
-# - Rename autogen_full.py
 # - Remove all other scripts except sandbox
 
 # TODO Packaging
@@ -459,5 +458,5 @@ output = [i.replace("<no_default>", "lib.no_default") for i in output]
 output = [i.replace("<class 'dict'>", "dict") for i in output]
 
 # %%
-with open("./src/pandas_helpers/autogen_full.py", "w") as f:
+with open("./src/pandas_helpers/pandas_helpers.py", "w") as f:
     f.write("\n".join(output))
