@@ -5,7 +5,7 @@ The col operator fixes that.
 
 # %%
 import pandas as pd
-from src.pandas_helpers.pandas_helpers import Col as col
+from pandas_helpers import Col as col
 
 # %%
 df = pd.DataFrame(dict(a=[1,2,3], b=[10,20,30]))
