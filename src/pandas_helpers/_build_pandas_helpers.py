@@ -203,6 +203,8 @@ def write_accessor_class_code(series_dict, accessor_name, extra_attrs = []):
         code_helpers = make_code_helpers(obj, method)        
         if accessor_name == "plot" and method in ("hexbin", "scatter"):
             continue
+        if accessor_name == "sparse" and method == "from_coo":
+            continue
         if accessor_name == "str" and method == "cat":
             output_code += make_called_method(method, ["others"], *code_helpers, func="_fn", accessor=accessor_name)
         else:

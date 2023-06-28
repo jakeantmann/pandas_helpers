@@ -429,9 +429,6 @@ class _SparseAccessor(object):
     def sp_values(self, DF):
         return self._fn(DF).sparse.sp_values
 
-    def from_coo(self, A, dense_index = False):
-        return CallCol(lambda DF: self._fn(DF).sparse.from_coo(A=A, dense_index=dense_index))
-
     def to_coo(self, row_levels = (0,), column_levels = (1,), sort_labels = False):
         return CallCol(lambda DF: self._fn(DF).sparse.to_coo(row_levels=row_levels, column_levels=column_levels, sort_labels=sort_labels))
 
@@ -629,9 +626,6 @@ class BaseCol(object):
 
     def __array__(self, dtype = None):
         return CallCol(lambda DF: self.__call__(DF).__array__(dtype=dtype))
-
-    def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
-        return CallCol(lambda DF: self.__call__(DF).__array_ufunc__(ufunc=ufunc, method=method, inputs=inputs, kwargs=kwargs))
 
     def __bool__(self):
         return CallCol(lambda DF: self.__call__(DF).__bool__())

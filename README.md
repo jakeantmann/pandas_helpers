@@ -12,10 +12,21 @@ Tools to simplify pandas-based data processing
 
 ## TODO
 
-### Make sure all methods and properties work as they should
+### Write unit tests for every method and property, including for the indexers and accessors
 
-- sparse: check from_coo (param A)
-- Write unit tests for every method and property, including for the indexers and accessors
+- [ ] `is_col_test`, `_decide_if_call`
+- [ ] `BaseCol.__getitem__`, `Col`, `CallCol`
+- [ ] Dunder properties
+- [ ] Accessor attrs
+  - [ ] `cat`
+  - [ ] `dt`
+  - [ ] `str`
+  - [ ] `sparse`
+  - [ ] `plot`
+- [ ] Regular properties
+- [ ] Indexer properties
+- [ ] Dunder methods
+- [ ] Regular methods
 
 ### Packaging
 
@@ -23,9 +34,9 @@ Tools to simplify pandas-based data processing
   - Remove `_sandbox.py`. This should be replaced by unit tests, and some examples can be added to the readme
 - Reintroduce and pass pre-commit checks
 - Use PipTools (since this is a library)
+- Add changelog
 - Publish to PyPi
 
 ### Future work
 
 - See whether the tests can be run on many versions of pandas
-- Add changelog
