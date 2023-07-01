@@ -12,9 +12,12 @@ Tools to simplify pandas-based data processing
 
 ## TODO
 
+- [ ] `Col` should raise an error if a container object is passed as an argument
+- [ ] `_decide_if_test` should insist that the first argument passes `_is_col_test`
+
 ### Write unit tests for every method and property, including for the indexers and accessors
 
-- [ ] `is_col_test`, `_decide_if_call`
+- [x] `_is_col_test`, `_decide_if_call`
 - [ ] `BaseCol.__getitem__`, `Col`, `CallCol`
 - [ ] Dunder properties
 - [ ] Accessor attrs
