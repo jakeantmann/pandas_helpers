@@ -16,9 +16,9 @@ Tools to simplify pandas-based data processing
 
 - [x] `_is_col_test`
 - [x] `_decide_if_call`
-- [ ] `BaseCol.__getitem__` should act like standard df indexer
-- [ ] `Col.__call__` should raise an error if it does not return a Series
-- [ ] `CallCol.__call__` should raise an error if it does not return a Series
+- [x] `BaseCol.__getitem__` should act like standard df indexer
+- [ ] `Col.__call__` should raise an error if it does not return a Series when applied to a dataframe
+- [ ] `CallCol.__call__` should raise an error if it does not return a Series when applied to a dataframe
 - [ ] Dunder properties
 - [ ] Accessor attrs
   - [ ] `cat`

@@ -57,14 +57,29 @@ def test_decide_if_call(obj1, obj2, expectation):
 @pytest.mark.parametrize(
     "arg1,arg2,expectation",
     [
-        (Col("a"), df, does_not_raise()),        
-        (Col((1, 2, 3)), df2, does_not_raise()),        
+        (Col("a"), df, does_not_raise()),
+        (Col((1, 2, 3)), df2, does_not_raise()),
         (Col("ABC"), df, pytest.raises(KeyError)),
         (Col("a"), df["a"], pytest.raises(KeyError)),
-        (Col("a"), 1, pytest.raises(TypeError)),        
+        (Col("a"), 1, pytest.raises(TypeError)),
     ],
 )
 def test_decide_if_call_errors(arg1, arg2, expectation):
     """Test _decide_if_call errors."""
     with expectation:
         _decide_if_call(arg1, arg2)
+
+# %% Test Col.__getitem__
+@pytest.mark.parametrize(
+    "obj,indexer,df,expectation",
+    [
+        (Col("b"), slice(1), df, [4]),
+        (Col("b"), slice(1,3), df, [5, 6]),
+        (Col("b"), slice(0), df, []),
+    ],
+)
+def test_col_getitem(obj, indexer, df, expectation):
+    """Test _decide_if_call."""
+    output = obj(df)[indexer]
+    assert output.to_list() == expectation
+    assert isinstance(output, pd.Series)
