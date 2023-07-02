@@ -56,7 +56,7 @@ def write_indexer_class(indexer_name):
         f"        self.func = func",
 
         f"    def __getitem__(self, *indexes):",
-        f"        return CallCol(lambda DF: self.func(DF)._{indexer_name}.__getitem__(*indexes))",
+        f"        return CallCol(lambda DF: self.func(DF).{indexer_name}.__getitem__(*indexes))",
         f"",
     ]
 
@@ -368,13 +368,6 @@ output = [
     "    def __str__(self):",
     "        return f\"The indexer \\\"{self.indexer}\\\" does not return a series.\"",
     "",
-    "def _get_series(df, indexer):",
-    "    output = df[indexer]",
-    "    if not isinstance(output, pd.Series):",    
-    "        raise NotSeriesError(indexer)",
-    "    return output",
-    "    ",
-    "",
     "def _is_col_test(obj):",
     "    return hasattr(obj, \"_is_col\")",
     "",
@@ -408,7 +401,7 @@ output = [
     "    col_name: Any",
     "    ",
     "    def __call__(self, DF):",
-    "        return _get_series(DF, self.col_name)",
+    "        return DF[self.col_name]",
     "",
     "@dataclass",
     "class CallCol(BaseCol):",

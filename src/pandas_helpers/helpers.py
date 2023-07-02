@@ -16,13 +16,6 @@ class NotSeriesError(Exception):
     def __str__(self):
         return f"The indexer \"{self.indexer}\" does not return a series."
 
-def _get_series(df, indexer):
-    output = df[indexer]
-    if not isinstance(output, pd.Series):
-        raise NotSeriesError(indexer)
-    return output
-    
-
 def _is_col_test(obj):
     return hasattr(obj, "_is_col")
 
@@ -33,25 +26,25 @@ class _AtIndexer:
     def __init__(self, func):
         self.func = func
     def __getitem__(self, *indexes):
-        return CallCol(lambda DF: self.func(DF)._at.__getitem__(*indexes))
+        return CallCol(lambda DF: self.func(DF).at.__getitem__(*indexes))
 
 class _IatIndexer:
     def __init__(self, func):
         self.func = func
     def __getitem__(self, *indexes):
-        return CallCol(lambda DF: self.func(DF)._iat.__getitem__(*indexes))
+        return CallCol(lambda DF: self.func(DF).iat.__getitem__(*indexes))
 
 class _IlocIndexer:
     def __init__(self, func):
         self.func = func
     def __getitem__(self, *indexes):
-        return CallCol(lambda DF: self.func(DF)._iloc.__getitem__(*indexes))
+        return CallCol(lambda DF: self.func(DF).iloc.__getitem__(*indexes))
 
 class _LocIndexer:
     def __init__(self, func):
         self.func = func
     def __getitem__(self, *indexes):
-        return CallCol(lambda DF: self.func(DF)._loc.__getitem__(*indexes))
+        return CallCol(lambda DF: self.func(DF).loc.__getitem__(*indexes))
 
 @dataclass
 class _StrAccessor(object):
@@ -1325,7 +1318,7 @@ class Col(BaseCol):
     col_name: Any
     
     def __call__(self, DF):
-        return _get_series(DF, self.col_name)
+        return DF[self.col_name]
 
 @dataclass
 class CallCol(BaseCol):

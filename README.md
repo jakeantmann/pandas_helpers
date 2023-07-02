@@ -12,14 +12,10 @@ Tools to simplify pandas-based data processing
 
 ## TODO
 
-- [x] `Col.__call__(df)` should raise an error if it does not return a Series
-- [ ] CallCol should raise an error if does not return a series
-
 ### Write unit tests for every method and property, including for the indexers and accessors
 
 - [x] `_is_col_test`
 - [x] `_decide_if_call`
-- [x] `_get_series`
 - [ ] `BaseCol.__getitem__` should act like standard df indexer
 - [ ] `Col.__call__` should raise an error if it does not return a Series
 - [ ] `CallCol.__call__` should raise an error if it does not return a Series
@@ -47,3 +43,4 @@ Tools to simplify pandas-based data processing
 ### Future work
 
 - See whether the tests can be run on many versions of pandas
+- Since one could feasibly use `col(["a", "b"])` (which could return a data frame), it may be appropriate to include the properties and methods of dataframes in some future release
