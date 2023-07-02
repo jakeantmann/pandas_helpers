@@ -9,13 +9,6 @@ import pandas as pd
 from pandas._libs import lib
 
 # %% Classes and functions
-class NotSeriesError(Exception):
-    def __init__(self, indexer):
-        self.indexer = indexer
-
-    def __str__(self):
-        return f"The indexer \"{self.indexer}\" does not return a series."
-
 def _is_col_test(obj):
     return hasattr(obj, "_is_col")
 
