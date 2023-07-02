@@ -12,13 +12,17 @@ Tools to simplify pandas-based data processing
 
 ## TODO
 
-- [ ] `Col` should raise an error if a container object is passed as an argument
-- [ ] `_decide_if_test` should insist that the first argument passes `_is_col_test`
+- [x] `Col.__call__(df)` should raise an error if it does not return a Series
+- [ ] CallCol should raise an error if does not return a series
 
 ### Write unit tests for every method and property, including for the indexers and accessors
 
-- [x] `_is_col_test`, `_decide_if_call`
-- [ ] `BaseCol.__getitem__`, `Col`, `CallCol`
+- [x] `_is_col_test`
+- [x] `_decide_if_call`
+- [x] `_get_series`
+- [ ] `BaseCol.__getitem__` should act like standard df indexer
+- [ ] `Col.__call__` should raise an error if it does not return a Series
+- [ ] `CallCol.__call__` should raise an error if it does not return a Series
 - [ ] Dunder properties
 - [ ] Accessor attrs
   - [ ] `cat`
@@ -33,12 +37,12 @@ Tools to simplify pandas-based data processing
 
 ### Packaging
 
-- Organise package contents
-  - Remove `_sandbox.py`. This should be replaced by unit tests, and some examples can be added to the readme
-- Reintroduce and pass pre-commit checks
-- Use PipTools (since this is a library)
-- Add changelog
-- Publish to PyPi
+- [ ] Organise package contents
+  - [ ] Add some examples from the analysis folder to the README
+- [ ] Reintroduce and pass pre-commit checks
+- [ ] Use PipTools (since this is a library) (UNSURE)
+- [ ] Add changelog
+- [ ] Publish to PyPi
 
 ### Future work
 

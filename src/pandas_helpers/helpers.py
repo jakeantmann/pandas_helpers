@@ -5,9 +5,24 @@ from abc import abstractmethod
 from dataclasses import dataclass
 from typing import Any, Callable
 
+import pandas as pd
 from pandas._libs import lib
 
 # %% Classes and functions
+class NotSeriesError(Exception):
+    def __init__(self, indexer):
+        self.indexer = indexer
+
+    def __str__(self):
+        return f"The indexer \"{self.indexer}\" does not return a series."
+
+def _get_series(df, indexer):
+    output = df[indexer]
+    if not isinstance(output, pd.Series):
+        raise NotSeriesError(indexer)
+    return output
+    
+
 def _is_col_test(obj):
     return hasattr(obj, "_is_col")
 
@@ -1310,7 +1325,7 @@ class Col(BaseCol):
     col_name: Any
     
     def __call__(self, DF):
-        return DF[self.col_name]
+        return _get_series(DF, self.col_name)
 
 @dataclass
 class CallCol(BaseCol):
