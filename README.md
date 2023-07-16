@@ -16,7 +16,8 @@ Tools to simplify pandas-based data processing
 
 - [x] `_is_col_test`
 - [x] `_decide_if_call`
-- [x] `BaseCol.__getitem__` should act like standard df indexer
+- [x] `Col.__getitem__` should act like standard df indexer
+- [x] `BaseCol._is_col` should should be True
 - [x] `Col.__call__`
 - [x] `CallCol.__call__`
 - [ ] Dunder properties

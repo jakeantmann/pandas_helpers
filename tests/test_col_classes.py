@@ -79,7 +79,7 @@ def test_decide_if_call_errors(arg1, arg2, expectation):
     ],
 )
 def test_col_getitem(obj, indexer, df, expectation):
-    """Test _decide_if_call."""
+    """Test Col.__getitem__."""
     output = obj(df)[indexer]
     assert output.to_list() == expectation
     assert isinstance(output, pd.Series)
@@ -92,7 +92,7 @@ def test_col_getitem(obj, indexer, df, expectation):
     ],
 )
 def test_col_call(column, df):
-    """Test _decide_if_call."""
+    """Test Col.__call__."""
     assert (Col(column)(df) == df[column]).all()
 
 @pytest.mark.parametrize(
@@ -104,7 +104,7 @@ def test_col_call(column, df):
     ],
 )
 def test_col_call_errors(column, df, expectation):
-    """Test _decide_if_call errors."""
+    """Test Col.__call__ errors."""
     with expectation:
         Col(column)(df)
 
@@ -118,7 +118,7 @@ def test_col_call_errors(column, df, expectation):
     ],
 )
 def test_callcol_call(fn, df):
-    """Test _decide_if_call."""
+    """Test CallCol.__call__."""
     assert (CallCol(fn)(df) == fn(df)).all()
 
 @pytest.mark.parametrize(
@@ -133,8 +133,11 @@ def test_callcol_call(fn, df):
     ],
 )
 def test_callcol_call_errors(fn, df, expectation):
-    """Test _decide_if_call errors."""
+    """Test CallCol.__call__ errors."""
     with expectation:
         CallCol(fn)(df)
 
-# %%
+# %% Test BaseCol
+def test_basecol():
+    """Test BaseCol."""
+    assert BaseCol()._is_col
