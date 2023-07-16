@@ -83,3 +83,58 @@ def test_col_getitem(obj, indexer, df, expectation):
     output = obj(df)[indexer]
     assert output.to_list() == expectation
     assert isinstance(output, pd.Series)
+
+# %% Test Col.__call__
+@pytest.mark.parametrize(
+    "column,df",
+    [
+        ("a", df),
+    ],
+)
+def test_col_call(column, df):
+    """Test _decide_if_call."""
+    assert (Col(column)(df) == df[column]).all()
+
+@pytest.mark.parametrize(
+    "column,df,expectation",
+    [
+        ("a", df, does_not_raise()),
+        ("a", 10, pytest.raises(TypeError)),
+        ("c", df, pytest.raises(KeyError)),
+    ],
+)
+def test_col_call_errors(column, df, expectation):
+    """Test _decide_if_call errors."""
+    with expectation:
+        Col(column)(df)
+
+# %% Test CallCol.__call__
+@pytest.mark.parametrize(
+    "fn,df",
+    [
+        (lambda DF: pd.Series([1,2,3]), df),
+        (lambda DF: DF["a"], df),
+        (lambda DF: DF.max(axis=1), df),
+    ],
+)
+def test_callcol_call(fn, df):
+    """Test _decide_if_call."""
+    assert (CallCol(fn)(df) == fn(df)).all()
+
+@pytest.mark.parametrize(
+    "fn,df,expectation",
+    [
+        (lambda DF: 123,                        df, does_not_raise()),
+        (lambda DF: DF["a"],                    df, does_not_raise()),
+        (lambda DF1,  DF2: DF1["a"] + DF2["a"], df, pytest.raises(TypeError)),
+        (lambda: 123,                           df, pytest.raises(TypeError)),
+        ("hello",                               df, pytest.raises(TypeError)),
+        (lambda DF: DF["a"],               "hello", pytest.raises(TypeError)),
+    ],
+)
+def test_callcol_call_errors(fn, df, expectation):
+    """Test _decide_if_call errors."""
+    with expectation:
+        CallCol(fn)(df)
+
+# %%
