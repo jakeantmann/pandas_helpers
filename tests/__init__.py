@@ -1,1 +1,1 @@
-"""Tests for pandas_helpers."""
+"""Tests for pandas_sans_lambdas."""

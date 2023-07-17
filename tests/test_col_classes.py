@@ -6,7 +6,7 @@ from contextlib import nullcontext as does_not_raise
 import pandas as pd
 import pytest
 
-from pandas_helpers.helpers import BaseCol, CallCol, Col, _is_col_test, _decide_if_call
+from pandas_sans_lambdas.helpers import BaseCol, CallCol, Col, _is_col_test, _decide_if_call
 
 # %% Data
 df = pd.DataFrame(dict(a=[1,2,3], b=[4,5,6]))

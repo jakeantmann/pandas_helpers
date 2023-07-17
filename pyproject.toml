@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 # Metadata etc not included until linting tools catch up
 [project]
-name            = "pandas_helpers"
+name            = "pandas_sans_lambdas"
 version         = "0.1.0"
 description     = "Tools to simplify pandas-based data processing"
 readme          = "README.md"
@@ -49,15 +49,15 @@ tests = [
 
 # Borrowed from https://github.com/pawamoy/git-changelog/blob/master/pyproject.toml
 [project.urls]
-homepage   = "https://github.com/jakeantmann/pandas_helpers"
-repository = "https://github.com//jakeantmann/pandas_helpers"
-releases   = "https://github.com//jakeantmann/pandas_helpers/releases"
-# documentation = "https://pandas_helpers.readthedocs.io/en/0.1.0"
-# documentation = "https://jakeantmann.github.io/pandas_helpers"
+homepage   = "https://github.com/jakeantmann/pandas_sans_lambdas"
+repository = "https://github.com//jakeantmann/pandas_sans_lambdas"
+releases   = "https://github.com//jakeantmann/pandas_sans_lambdas/releases"
+# documentation = "https://pandas_sans_lambdas.readthedocs.io/en/0.1.0"
+# documentation = "https://jakeantmann.github.io/pandas_sans_lambdas"
 # changelog = "https://pawamoy.github.io/git-changelog/changelog" # See https://keepachangelog.com/en/1.0.0/ for info on this
-issues      = "https://github.com/jakeantmann/pandas_helpers/issues"
-discussions = "https://github.com/jakeantmann/pandas_helpers/discussions"
-# gitter = "https://gitter.im/pandas_helpers/community"
+issues      = "https://github.com/jakeantmann/pandas_sans_lambdas/issues"
+discussions = "https://github.com/jakeantmann/pandas_sans_lambdas/discussions"
+# gitter = "https://gitter.im/pandas_sans_lambdas/community"
 # funding = "https://github.com/sponsors/jakeantmann"
 
 [tool.setuptools]
@@ -68,7 +68,7 @@ where = ["src"]
 ## package names should match these glob patterns (["*"] by default)
 # include = ["my_package*"]
 ## exclude packages matching these glob patterns (empty by default)
-exclude = ["pandas_helpers.tests*"]
+exclude = ["pandas_sans_lambdas.tests*"]
 # to disable scanning PEP 420 namespaces (true by default)
 namespaces = false
 

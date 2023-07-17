@@ -1,4 +1,4 @@
-"""Automate the build of pandas_helpers.py"""
+"""Automate the build of pandas_sans_lambdas.py"""
 
 # %% Imports
 import inspect
@@ -410,5 +410,5 @@ output = [i.replace("<no_default>", "lib.no_default") for i in output]
 output = [i.replace("<class 'dict'>", "dict") for i in output]
 
 # %% Write the output as a file
-with open("./src/pandas_helpers/helpers.py", "w") as f:
+with open("./src/pandas_sans_lambdas/helpers.py", "w") as f:
     f.write("\n".join(output))

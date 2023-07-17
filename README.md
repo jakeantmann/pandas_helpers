@@ -1,47 +1,26 @@
-# Pandas helpers
+# Pandas Sans Lambdas
 
-Tools to simplify pandas-based data processing
+![Tests](https://github.com/jakeantmann/pandas_sans_lambdas/actions/workflows/tests.yml/badge.svg)
 
-![Tests](https://github.com/jakeantmann/pandas_helpers/actions/workflows/tests.yml/badge.svg)
+Pandas method chaining using `assign` or `loc` usually means using lambdas. These get repetitive and reduce readability. Pandas Sans Lambdas is a solution to this. Here's an example:
 
-## Initialise dev
+``` python
+import pandas as pd
+from pandas_sans_lambdas import Col as col
 
-- Clone repo
-- Run `source ./config/dev-init.sh` from within the root repo directory. This updates pip, installs all required packages (including those required for dev), and installs pre-commit.
-  - Note: Some pre-commit hooks are shell scripts, so use linux when developing this package.
+df = pd.DataFrame({"a": [1,2,3], "b": [4,5,6]})
 
-## TODO
+# The old way
+df = df.assign(with_lambdas = lambda DF: DF["a"] ** 2 / DF["b"])
 
-### Write unit tests for every method and property, including for the indexers and accessors
+# The new way
+df = df.assign(with_lambdas = col("a") ** 2 / col("b"))
 
-- [x] `_is_col_test`
-- [x] `_decide_if_call`
-- [x] `Col.__getitem__` should act like standard df indexer
-- [x] `BaseCol._is_col` should should be True
-- [x] `Col.__call__`
-- [x] `CallCol.__call__`
-- [ ] Dunder properties
-- [ ] Accessor attrs
-  - [ ] `cat`
-  - [ ] `dt`
-  - [ ] `str`
-  - [ ] `sparse`
-  - [ ] `plot`
-- [ ] Regular properties
-- [ ] Indexer properties
-- [ ] Dunder methods
-- [ ] Regular methods
+print(df)
+```
 
-### Packaging
+Hopefully you agree that this is more readable!
 
-- [ ] Organise package contents
-  - [ ] Add some examples from the analysis folder to the README
-- [ ] Reintroduce and pass pre-commit checks
-- [ ] Use PipTools (since this is a library) (UNSURE)
-- [ ] Add changelog
-- [ ] Publish to PyPi
+## Current project status
 
-### Future work
-
-- See whether the tests can be run on many versions of pandas
-- Since one could feasibly use `col(["a", "b"])` (which could return a data frame), it may be appropriate to include the properties and methods of dataframes in some future release
+This package is under development. Specifically, unit test coverage is currently incomplete. Get in touch if you want to contribute to test coverage, or if you find any bugs!

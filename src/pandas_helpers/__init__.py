@@ -1,3 +1,3 @@
-"""Pandas helpers."""
+"""Pandas Sans Lambdas."""
 
-from pandas_helpers.helpers import Col
+from pandas_sans_lambdas.helpers import Col as col
