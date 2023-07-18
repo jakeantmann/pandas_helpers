@@ -6,7 +6,7 @@ Pandas method chaining using `assign` or `loc` usually means using lambdas. Thes
 
 ``` python
 import pandas as pd
-from pandas_sans_lambdas import Col as col
+from pandas_sans_lambdas import col
 
 df = pd.DataFrame({"a": [1,2,3], "b": [4,5,6]})
 
