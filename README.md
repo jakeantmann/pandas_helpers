@@ -14,7 +14,7 @@ df = pd.DataFrame({"a": [1,2,3], "b": [4,5,6]})
 df = df.assign(with_lambdas = lambda DF: DF["a"] ** 2 / DF["b"])
 
 # The new way
-df = df.assign(with_lambdas = col("a") ** 2 / col("b"))
+df = df.assign(sans_lambdas = col("a") ** 2 / col("b"))
 
 print(df)
 ```
